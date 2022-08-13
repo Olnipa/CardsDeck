@@ -4,43 +4,39 @@
     {
         static void Main(string[] args)
         {
-            UserHand player = new UserHand();
-            List<char> cardSuit = new List<char>() { '♠', '♥', '♦', '♣' };
-            List<string> cardValue = new List<string>() { "2", "3", "4", "Jack" };
-            List<Card> cards = new List<Card>();
+            Player player = new Player();
+            List<char> cardsSuit = new List<char>() { '♠', '♥', '♦', '♣' };
+            List<string> cardsValue = new List<string>() { "2", "3", "4", "Jack" };
+            NPC cardsDeck = new NPC(cardsSuit, cardsValue);
             bool isWorking = true;
-            Card removedCard;
-
-            for (int i = 0; i < cardSuit.Count; i++)
-            {
-                for (int j = 0; j < cardValue.Count; j++)
-                {
-                    cards.Add(new Card(cardSuit[i], cardValue[j]));
-                }
-            }    
-            
-            Deck cardsDeck = new Deck(cards);
 
             while (isWorking)
             {
-                Console.Write("\nHello! Enter appropriate number:\n1 - Take one card\n2 - Show cards from deck\n3 - Shuffle cards in deck\n4 - Show cards from hand\n0 - Exit\n\nEntered value: ");
+                const string TakeCard = "1";
+                const string ShowDeckCards = "2";
+                const string ShaffleDeckCards = "3";
+                const string ShowHandCards = "4";
+                const string Exit = "0";
+
+                Console.Write($"\nHello! Enter appropriate number:\n{TakeCard} - Take one card\n{ShowDeckCards} - Show cards from deck" +
+                    $"\n{ShaffleDeckCards} - Shuffle cards in deck\n{ShowHandCards} - Show cards from hand\n{Exit} - Exit\n\nEntered number: ");
                 string choosenMenu = Console.ReadLine();
                 
                 switch (choosenMenu)
                 {
-                    case "1":
+                    case TakeCard:
                         player.TakeCard(cardsDeck.RemoveCard());
                         break;
-                    case "2":
+                    case ShowDeckCards:
                         cardsDeck.ShowCards();
                         break;
-                    case "3":
+                    case ShaffleDeckCards:
                         cardsDeck.Shuffle();
                         break;
-                    case "4":
+                    case ShowHandCards:
                         player.ShowCards();
                         break;
-                    case "0":
+                    case Exit:
                         isWorking = false;
                         break;
                     default:
@@ -50,23 +46,27 @@
         }
     }
     
-    class Deck
+    class NPC : Deck
     {
-        private List<Card> _cardsDeck = new List<Card>();
-
-        public Deck(List<Card> cardsDeck)
+        public NPC(List<char> cardsSuit, List<string> cardsValues)
         {
-            _cardsDeck = cardsDeck;
+            for (int i = 0; i < cardsSuit.Count; i++)
+            {
+                for (int j = 0; j < cardsValues.Count; j++)
+                {
+                    _cards.Add(new Card(cardsSuit[i], cardsValues[j]));
+                }
+            }
         }
 
         public Card RemoveCard()
         {
             Card removedCard = null;
 
-            if (_cardsDeck.Count > 0)
+            if (_cards.Count > 0)
             {
-                removedCard = _cardsDeck[0];
-                _cardsDeck.RemoveAt(0);
+                removedCard = _cards[0];
+                _cards.RemoveAt(0);
             }
             else
             {
@@ -78,30 +78,13 @@
 
         public void Shuffle()
         {
-            for (int i = 0; i < _cardsDeck.Count; i++)
+            for (int i = 0; i < _cards.Count; i++)
             {
                 Random random = new Random();
-                int randomCard = random.Next(0, _cardsDeck.Count);
-                Card tempMemory = _cardsDeck[randomCard];
-                _cardsDeck[randomCard] = _cardsDeck[i];
-                _cardsDeck[i] = tempMemory;
-            }
-        }
-
-        public void ShowCards()
-        {
-             if (_cardsDeck.Count > 0)
-            {
-                Console.WriteLine();
-
-                for (int i = 0; i < _cardsDeck.Count; i++)
-                {
-                    Console.WriteLine(_cardsDeck[i].Suit + _cardsDeck[i].Value);
-                }
-            }
-            else
-            {
-                Console.WriteLine("\nNo cards in deck!!!");
+                int randomIndex = random.Next(0, _cards.Count);
+                Card tempMemory = _cards[randomIndex];
+                _cards[randomIndex] = _cards[i];
+                _cards[i] = tempMemory;
             }
         }
     }
@@ -118,32 +101,35 @@
         }
     }
 
-    class UserHand
+    class Player : Deck
     {
-        private List<Card> _takenCards = new List<Card>();
-
         public void TakeCard(Card takenCard)
         {
             if (takenCard != null)
             {
-                _takenCards.Add(takenCard);
+                _cards.Add(takenCard);
             }
         }
+    }
+
+    class Deck
+    {
+        protected List<Card> _cards = new List<Card>();
 
         public void ShowCards()
         {
-            if (_takenCards.Count > 0)
+            if (_cards.Count > 0)
             {
                 Console.WriteLine();
 
-                for (int i = 0; i < _takenCards.Count; i++)
+                for (int i = 0; i < _cards.Count; i++)
                 {
-                    Console.WriteLine(_takenCards[i].Suit + _takenCards[i].Value);
+                    Console.WriteLine(_cards[i].Suit + _cards[i].Value);
                 }
             }
             else
             {
-                Console.WriteLine("\nNo cards in hand!!!");
+                Console.WriteLine("\nNo cards here!");
             }
         }
     }
