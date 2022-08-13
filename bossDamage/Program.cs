@@ -7,17 +7,17 @@
             Random random = new Random();
             int minBossDamage = 10;
             int maxBossDamage = 50;
-            int bossDamage = random.Next(minBossDamage, maxBossDamage);
+            int bossDamage;
 
-            int minCriticalChance = 1;
-            int maxCriticalChance = 101;
-            int criticalChance = 50;
+            int minRandomNumber = 1;
+            int maxRandomNumber = 101;
+            int criticalChancePercent = 60;
             int criticalCoefficient = 3;
 
-            if (random.Next(minCriticalChance, maxCriticalChance) > criticalChance)
+            if (random.Next(minRandomNumber, maxRandomNumber) <= criticalChancePercent)
             {
-                bossDamage *= criticalCoefficient;
-            }            
+                bossDamage = random.Next(minBossDamage, maxBossDamage) * criticalCoefficient;
+            }
         }
     }
 }
