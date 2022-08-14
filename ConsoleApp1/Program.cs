@@ -4,10 +4,10 @@
     {
         static void Main(string[] args)
         {
-            Player player = new Player();
+            PlayerDeck player1Deck = new PlayerDeck();
             List<char> cardsSuit = new List<char>() { '♠', '♥', '♦', '♣' };
             List<string> cardsValue = new List<string>() { "2", "3", "4", "Jack" };
-            NPC cardsDeck = new NPC(cardsSuit, cardsValue);
+            TableDeck cardsDeck = new TableDeck(cardsSuit, cardsValue);
             bool isWorking = true;
 
             while (isWorking)
@@ -25,7 +25,7 @@
                 switch (choosenMenu)
                 {
                     case TakeCard:
-                        player.TakeCard(cardsDeck.RemoveCard());
+                        player1Deck.TakeCard(cardsDeck.GiveCard());
                         break;
                     case ShowDeckCards:
                         cardsDeck.ShowCards();
@@ -34,7 +34,7 @@
                         cardsDeck.Shuffle();
                         break;
                     case ShowHandCards:
-                        player.ShowCards();
+                        player1Deck.ShowCards();
                         break;
                     case Exit:
                         isWorking = false;
@@ -46,45 +46,48 @@
         }
     }
     
-    class NPC : Deck
+    class TableDeck : DefaultDeck
     {
-        public NPC(List<char> cardsSuit, List<string> cardsValues)
+        public TableDeck(List<char> cardSuits, List<string> cardValues)
         {
-            for (int i = 0; i < cardsSuit.Count; i++)
+            for (int i = 0; i < cardSuits.Count; i++)
             {
-                for (int j = 0; j < cardsValues.Count; j++)
+                for (int j = 0; j < cardValues.Count; j++)
                 {
-                    _cards.Add(new Card(cardsSuit[i], cardsValues[j]));
+                    Cards.Add(new Card(cardSuits[i], cardValues[j]));
                 }
             }
         }
 
-        public Card RemoveCard()
+        public Card GiveCard()
         {
-            Card removedCard = null;
+            Card givenCard = null;
 
-            if (_cards.Count > 0)
+            if (Cards.Count > 0)
             {
-                removedCard = _cards[0];
-                _cards.RemoveAt(0);
+                int givenCardIndex = 0;
+
+                givenCard = Cards[givenCardIndex];
+                Cards.RemoveAt(givenCardIndex);
             }
             else
             {
                 Console.WriteLine("\nNo cards in deck!!!");
             }
 
-            return removedCard;
+            return givenCard;
         }
 
         public void Shuffle()
         {
-            for (int i = 0; i < _cards.Count; i++)
+            for (int i = 0; i < Cards.Count; i++)
             {
+                int minRandomIndex = 0;
                 Random random = new Random();
-                int randomIndex = random.Next(0, _cards.Count);
-                Card tempMemory = _cards[randomIndex];
-                _cards[randomIndex] = _cards[i];
-                _cards[i] = tempMemory;
+                int randomIndex = random.Next(minRandomIndex, Cards.Count);
+                Card tempMemory = Cards[randomIndex];
+                Cards[randomIndex] = Cards[i];
+                Cards[i] = tempMemory;
             }
         }
     }
@@ -101,30 +104,30 @@
         }
     }
 
-    class Player : Deck
+    class PlayerDeck : DefaultDeck
     {
         public void TakeCard(Card takenCard)
         {
             if (takenCard != null)
             {
-                _cards.Add(takenCard);
+                Cards.Add(takenCard);
             }
         }
     }
 
-    class Deck
+    class DefaultDeck
     {
-        protected List<Card> _cards = new List<Card>();
+        protected List<Card> Cards = new List<Card>();
 
         public void ShowCards()
         {
-            if (_cards.Count > 0)
+            if (Cards.Count > 0)
             {
                 Console.WriteLine();
 
-                for (int i = 0; i < _cards.Count; i++)
+                for (int i = 0; i < Cards.Count; i++)
                 {
-                    Console.WriteLine(_cards[i].Suit + _cards[i].Value);
+                    Console.WriteLine(Cards[i].Suit + Cards[i].Value);
                 }
             }
             else
