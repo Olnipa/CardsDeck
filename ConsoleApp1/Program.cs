@@ -1,6 +1,6 @@
 ﻿namespace Cards
 {
-    internal class Program1
+    internal class Program
     {
         static void Main(string[] args)
         {
