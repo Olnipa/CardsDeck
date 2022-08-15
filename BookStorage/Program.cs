@@ -68,11 +68,11 @@
 
     class DataBase
     {
-        public List<Book> Books { get; private set; }
+        private List<Book> _books;
 
         public DataBase(List<Book> books)
         {
-            Books = books;
+            _books = books;
         }
 
         public void RemoveBook()
@@ -89,7 +89,7 @@
 
             if (Console.ReadLine() == "1")
             {
-                Books.RemoveAt(index);
+                _books.RemoveAt(index);
                 Console.WriteLine("Book was successfully removed");
             }
             else
@@ -132,16 +132,16 @@
             return indexes;
         }
 
-        public List<int> ReturnIndexByYear()
+        private List<int> ReturnIndexByYear()
         {
             int year = ReadNumber("year of publishig");
             List<int> indexes = new List<int>();
 
             Console.WriteLine();
 
-            for (int i = 0; i < Books.Count; i++)
+            for (int i = 0; i < _books.Count; i++)
             {
-                if (Books[i].PublicationYear == year)
+                if (_books[i].PublicationYear == year)
                 {
                     indexes.Add(i);
                 }
@@ -150,16 +150,16 @@
             return indexes;
         }
 
-        public List<int> ReturnIndexByBookName()
+        private List<int> ReturnIndexByBookName()
         {
             string bookName = ReadName("book");
             List<int> indexes = new List<int>();
 
             Console.WriteLine();
 
-            for (int i = 0; i < Books.Count; i++)
+            for (int i = 0; i < _books.Count; i++)
             {
-                if (Books[i].Name.ToLower() == bookName.ToLower())
+                if (_books[i].Name.ToLower() == bookName.ToLower())
                 {
                     indexes.Add(i);
                 }
@@ -168,16 +168,16 @@
             return indexes;
         }
 
-        public List<int> ReturnIndexByAuthorName()
+        private List<int> ReturnIndexByAuthorName()
         {
             string authorName = ReadName("author");
             List<int> indexes = new List<int>();
 
             Console.WriteLine();
 
-            for (int i = 0; i < Books.Count; i++)
+            for (int i = 0; i < _books.Count; i++)
             {
-                if (Books[i].AuthorName.ToLower() == authorName.ToLower())
+                if (_books[i].AuthorName.ToLower() == authorName.ToLower())
                 {
                     indexes.Add(i);
                 }
@@ -233,27 +233,27 @@
         {
             Console.WriteLine();
 
-            for (int i = 0; i < Books.Count; i++)
+            for (int i = 0; i < _books.Count; i++)
             {
                 ShowBook(i);
             }
         }
 
-        public void ShowBook(int index)
+        private void ShowBook(int index)
         {
-            if (index < 0 || index >= Books.Count)
+            if (index < 0 || index >= _books.Count)
             {
                 Console.WriteLine("No results were found with your request.");
             }
             else
             {
-                Console.WriteLine($"{index + 1}. Book name: {Books[index].Name} | Author: {Books[index].AuthorName} | Published: {Books[index].PublicationYear}");
+                Console.WriteLine($"{index + 1}. Book name: {_books[index].Name} | Author: {_books[index].AuthorName} | Published: {_books[index].PublicationYear}");
             }
         }
 
         public void AddBook(Book newBook)
         {
-            Books.Add(newBook);
+            _books.Add(newBook);
             Console.WriteLine("Book was successfully added");
         }
     }
