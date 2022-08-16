@@ -4,13 +4,7 @@
     {
         static void Main(string[] args)
         {
-            List<Book> books = new List<Book>()
-            {
-                new Book("Lord Of The Ring", 1954, "Tolkien"),
-                new Book("Game development for beginners", 2014, "Roman"),
-                new Book("Spin of Shapoklyak", 2022, "Uspensky"),
-                new Book("Vinnipuh: reload", 2022, "Alan")
-            };
+            List<Book> books = new List<Book>();
             DataBase booksData = new DataBase(books);
             bool isWorking = true;
 
@@ -72,6 +66,12 @@
 
         public DataBase(List<Book> books)
         {
+            books.AddRange(new List<Book> {
+                new Book("Lord Of The Ring", 1954, "Tolkien"),
+                new Book("Game development for beginners", 2014, "Roman"),
+                new Book("Spin of Shapoklyak", 2022, "Uspensky"),
+                new Book("Vinnipuh: reload", 2022, "Alan")
+            });
             _books = books;
         }
 
@@ -86,8 +86,9 @@
             Console.WriteLine("Are you shure, you want to remove below book?\n");
             ShowBook(index);
             Console.Write($"\n{DeleteBook} - remove this book\n{Cancel} - cancel\n\nEnter value: ");
+            string choosenMenu = Console.ReadLine();
 
-            if (Console.ReadLine() == "1")
+            if (choosenMenu == DeleteBook)
             {
                 _books.RemoveAt(index);
                 Console.WriteLine("Book was successfully removed");
@@ -100,89 +101,8 @@
 
         public List<int> FindIndexes()
         {
-            const string FindByBookName = "1";
-            const string FindByAuthorName = "2";
-            const string FindByYear = "3";
-            const string FindByIndex = "4";
-            const string Cancel = "0";
             List<int> indexes = new List<int>();
-
-            Console.Write($"\n{FindByBookName} - Find book by name\n{FindByAuthorName} - Find book by author name" +
-                $"\n{FindByYear} - Find book by year\n{FindByIndex} - Find book by index\n{Cancel} - Cancel" +
-                $"\n\nEnter number: ");
-            
-            switch (Console.ReadLine())
-            {
-                case FindByBookName:
-                    indexes = ReturnIndexByBookName();
-                    break;
-                case FindByAuthorName:
-                    indexes = ReturnIndexByAuthorName();
-                    break;
-                case FindByYear:
-                    indexes = ReturnIndexByYear();
-                    break;
-                case FindByIndex:
-                    indexes.Add(ReadNumber("book index") - 1);
-                    break;
-                case Cancel:
-                    break;
-            }
-
-            return indexes;
-        }
-
-        private List<int> ReturnIndexByYear()
-        {
-            int year = ReadNumber("year of publishig");
-            List<int> indexes = new List<int>();
-
-            Console.WriteLine();
-
-            for (int i = 0; i < _books.Count; i++)
-            {
-                if (_books[i].PublicationYear == year)
-                {
-                    indexes.Add(i);
-                }
-            }
-
-            return indexes;
-        }
-
-        private List<int> ReturnIndexByBookName()
-        {
-            string bookName = ReadName("book");
-            List<int> indexes = new List<int>();
-
-            Console.WriteLine();
-
-            for (int i = 0; i < _books.Count; i++)
-            {
-                if (_books[i].Name.ToLower() == bookName.ToLower())
-                {
-                    indexes.Add(i);
-                }
-            }
-
-            return indexes;
-        }
-
-        private List<int> ReturnIndexByAuthorName()
-        {
-            string authorName = ReadName("author");
-            List<int> indexes = new List<int>();
-
-            Console.WriteLine();
-
-            for (int i = 0; i < _books.Count; i++)
-            {
-                if (_books[i].AuthorName.ToLower() == authorName.ToLower())
-                {
-                    indexes.Add(i);
-                }
-            }
-
+            indexes = ReturnIndex();
             return indexes;
         }
 
@@ -239,6 +159,30 @@
             }
         }
 
+        public void AddBook(Book newBook)
+        {
+            _books.Add(newBook);
+            Console.WriteLine("Book was successfully added");
+        }
+
+        private List<int> ReturnIndex()
+        {
+            string searchFrase = ReadName("year of publishing, author or book");
+            List<int> indexes = new List<int>();
+
+            Console.WriteLine();
+
+            for (int i = 0; i < _books.Count; i++)
+            {
+                if (_books[i].Name.ToLower() == searchFrase.ToLower() || Convert.ToString(_books[i].PublicationYear).ToLower() == searchFrase.ToLower() || _books[i].AuthorName.ToLower() == searchFrase.ToLower())
+                {
+                    indexes.Add(i);
+                }
+            }
+
+            return indexes;
+        }
+
         private void ShowBook(int index)
         {
             if (index < 0 || index >= _books.Count)
@@ -249,12 +193,6 @@
             {
                 Console.WriteLine($"{index + 1}. Book name: {_books[index].Name} | Author: {_books[index].AuthorName} | Published: {_books[index].PublicationYear}");
             }
-        }
-
-        public void AddBook(Book newBook)
-        {
-            _books.Add(newBook);
-            Console.WriteLine("Book was successfully added");
         }
     }
 }
