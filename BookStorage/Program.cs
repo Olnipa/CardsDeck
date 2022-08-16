@@ -25,7 +25,7 @@
                 switch (choosenMenu)
                 {
                     case AddBook:
-                        booksData.AddBook(new Book(booksData.ReadName("book"), booksData.ReadNumber("year of publishing"), booksData.ReadName("author")));
+                        booksData.AddBook(new Book(booksData.ReadText("book name"), booksData.ReadNumber("year of publishing"), booksData.ReadText("author name")));
                         break;
                     case ShowBooks:
                         booksData.ShowAllBooks();
@@ -101,33 +101,30 @@
 
         public List<int> FindIndexes()
         {
-            List<int> indexes = new List<int>();
-            indexes = ReturnIndex();
+            List<int> indexes = ReturnIndex();
             return indexes;
         }
 
-        public int ReadNumber(string valueNameForFind)
+        public int ReadNumber(string nameOfSearchValue)
         {
             int value;
 
-            Console.Write($"Enter {valueNameForFind}: ");
-
-            while (int.TryParse(Console.ReadLine(), out value) == false)
+            while (int.TryParse(ReadText(nameOfSearchValue), out value) == false)
             {
-                Console.Write($"Entered value is incorrect. You can use only numbers.\nEnter {valueNameForFind}: ");
+                Console.Write($"Entered value is incorrect. You can use only numbers.\n");
             }
 
             return value;
         }
 
-        public string ReadName(string text)
+        public string ReadText(string nameOfSearchValue)
         {
             string value = "";
-            int minLength = 2;
+            int minLength = 1;
 
             while (value.Length < minLength)
             {
-                Console.Write("Enter " + text + " name (value must include at least " + minLength + " symbols): ");
+                Console.Write("Enter " + nameOfSearchValue + " (value must include at least " + minLength + " symbol): ");
                 value = Console.ReadLine();
             }
 
@@ -167,7 +164,7 @@
 
         private List<int> ReturnIndex()
         {
-            string searchFrase = ReadName("year of publishing, author or book");
+            string searchFrase = ReadText("year of publishing, author or book name");
             List<int> indexes = new List<int>();
 
             Console.WriteLine();
