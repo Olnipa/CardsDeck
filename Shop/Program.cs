@@ -6,8 +6,13 @@
         {
             int initialMoney = 1000;
             bool isWorking = true;
-            Inventory playerInventory = new Inventory(new List<Item>());
-            Inventory nPCInventory = new Inventory(new List<Item>());
+            Inventory playerInventory = new Inventory(new List<Item>()
+            { (new Item("Old sock", 1, 3, 2)),
+              (new Food("Apple", 5, 5, 10)) });
+            Inventory nPCInventory = new Inventory(new List<Item>()
+            { (new MeleeWeapon("Small axe", 200, 15, false, 100, 3)),
+              (new MeleeWeapon("Big sword", 300, 25, true, 200, 2)),
+              (new Food("Small potion", 100, 50, 10, 5)) });
             NPC seller = new NPC("John Seller", initialMoney, nPCInventory);
             Player player1 = new Player("Bill Buyer", initialMoney, playerInventory);
 
@@ -52,20 +57,70 @@
 
     class Inventory
     {
-        public List<Item> Items { get; private set; }
+        private List<Item> _items;
 
         public Inventory(List<Item> items)
         {
-            Items = items;
+            _items = items;
+        }
+
+        public int GetCount()
+        {
+            return _items.Count;
+        }
+
+        public int GetItemWeight(int itemIndex)
+        {
+            return _items[itemIndex].Weight;
+        }
+
+        public int GetItemPrice(int itemIndex)
+        {
+            return _items[itemIndex].Price;
+        }
+
+        public int GetItemQuantity(int itemIndex)
+        {
+            return _items[itemIndex].Quantity;
+        }
+
+        public string GetItemName(int itemIndex)
+        {
+            return _items[itemIndex].Name;
+        }
+
+        public void AddItem(Item newItem)
+        {
+            _items.Add(newItem);
+        }
+
+        public void AddItemQuantity(int itemIndex, int quantityForIncrease)
+        {
+            _items[itemIndex].IncreaseQuantity(quantityForIncrease);
+        }
+
+        public void RemoveItem(int itemIndex)
+        {
+            _items.RemoveAt(itemIndex);
+        }
+
+        public void RemoveItemQuantity(int itemIndex, int quantityForDecrease)
+        {
+            _items[itemIndex].DecreaseQuantity(quantityForDecrease);
+
+            if (GetItemQuantity(itemIndex) == 0)
+            {
+                RemoveItem(itemIndex);
+            }
         }
 
         public void ShowItems()
         {
-            if (Items.Count > 0)
+            if (_items.Count > 0)
             {
-                for (int i = 0; i < Items.Count; i++)
+                for (int i = 0; i < _items.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1}. {Items[i].Name}: Price - {Items[i].Price}. Quantity - {Items[i].Quantity} pcs.");
+                    Console.WriteLine($"{i + 1}. {_items[i].Name}: Price - {_items[i].Price}. Quantity - {_items[i].Quantity} pcs.");
                 }
             }
             else
@@ -91,7 +146,7 @@
             Quantity = quantity;
         }
 
-        public void decreaseQuantity(int quantityForDecrease)
+        public void DecreaseQuantity(int quantityForDecrease)
         {
             if (Quantity >= quantityForDecrease)
             {
@@ -103,7 +158,7 @@
             }
         }
 
-        public void increaseQuantity(int quantityForIncrease)
+        public void IncreaseQuantity(int quantityForIncrease)
         {
             Quantity += quantityForIncrease;
         }
@@ -135,44 +190,44 @@
 
     class Character
     {
+        private Inventory _inventory;
         public string Name { get; protected set; }
         public int Money { get; protected set; }
-        public Inventory Inventory { get; protected set; }
-
+ 
         public Character(string name, Inventory inventory, int money = 500)
         {
             Name = name;
             Money = money;
-            Inventory = inventory;
+            _inventory = inventory;
         }
 
         public void ShowInventory(string characterName)
         {
             Console.WriteLine($"{characterName}'s Inventory:\nMoney - {Money}");
-            Inventory.ShowItems();
+            _inventory.ShowItems();
         }
 
         public void BuyItem(Character seller)
         {
-            if (seller.Inventory.Items.Count > 0)
+            if (seller._inventory.GetCount() > 0)
             {
                 Console.WriteLine("Items fo sale:");
-                seller.Inventory.ShowItems();
+                seller._inventory.ShowItems();
 
                 int itemIndex = ReadNumber("Write item index for buy:") - 1;
 
-                if (itemIndex < seller.Inventory.Items.Count & itemIndex >= 0)
+                if (itemIndex < seller._inventory.GetCount() & itemIndex >= 0)
                 {
                     int quantityForBuy = ReadNumber("Write quantity for buy:");
-                    int totalPrice = quantityForBuy * seller.Inventory.Items[itemIndex].Price;
+                    int totalPrice = quantityForBuy * seller._inventory.GetItemPrice(itemIndex);
 
-                    if (totalPrice <= Money & quantityForBuy <= seller.Inventory.Items[itemIndex].Quantity)
+                    if (totalPrice <= Money & quantityForBuy <= seller._inventory.GetItemQuantity(itemIndex))
                     {
                         Money -= totalPrice;
                         AddItemQuantity(seller, itemIndex, quantityForBuy);
-                        Console.WriteLine($"You spent {totalPrice} units of money and bought {quantityForBuy} pcs of {seller.Inventory.Items[itemIndex].Name}.");
+                        Console.WriteLine($"You spent {totalPrice} units of money and bought {quantityForBuy} pcs of {seller._inventory.GetItemName(itemIndex)}.");
                         seller.Money += totalPrice;
-                        seller.RemoveItemQuantity(itemIndex, quantityForBuy);
+                        seller._inventory.RemoveItemQuantity(itemIndex, quantityForBuy);
                     }
                     else if (totalPrice > Money)
                     {
@@ -180,7 +235,7 @@
                     }
                     else
                     {
-                        Console.WriteLine($"Not enough quanntity of {seller.Inventory.Items[itemIndex].Name}.");
+                        Console.WriteLine($"Not enough quanntity of {seller._inventory.GetItemName(itemIndex)}.");
                     }
                 }
                 else
@@ -194,26 +249,17 @@
             }
         }
 
-        private void RemoveItemQuantity(int itemIndex, int quantityForDecrease)
-        {
-            Inventory.Items[itemIndex].decreaseQuantity(quantityForDecrease);
-
-            if (Inventory.Items[itemIndex].Quantity == 0)
-            {
-                Inventory.Items.RemoveAt(itemIndex);
-            }
-        }
 
         private void AddItemQuantity(Character Seller, int itemIndex, int quantityForIncrease)
         {
             bool itemNotExistInBuyerInventory = true;
-            string itemName = Seller.Inventory.Items[itemIndex].Name;
+            string itemName = Seller._inventory.GetItemName(itemIndex);
 
-            for (int i = 0; i < Inventory.Items.Count; i++)
+            for (int i = 0; i < _inventory.GetCount(); i++)
             {
-                if (Inventory.Items[i].Name == Seller.Inventory.Items[itemIndex].Name)
+                if (_inventory.GetItemName(i) == Seller._inventory.GetItemName(itemIndex))
                 {
-                    Inventory.Items[i].increaseQuantity(quantityForIncrease);
+                    _inventory.AddItemQuantity(i, quantityForIncrease);
                     itemNotExistInBuyerInventory = false;
                     break;
                 }
@@ -221,9 +267,9 @@
 
             if (itemNotExistInBuyerInventory)
             {
-                int itemPrice = Seller.Inventory.Items[itemIndex].Price;
-                int itemWeight = Seller.Inventory.Items[itemIndex].Weight;
-                Inventory.Items.Add(new Item(itemName, itemPrice, itemWeight, quantityForIncrease));
+                int itemPrice = Seller._inventory.GetItemPrice(itemIndex);
+                int itemWeight = Seller._inventory.GetItemWeight(itemIndex);
+                _inventory.AddItem(new Item(itemName, itemPrice, itemWeight, quantityForIncrease));
             }
         }
 
@@ -255,8 +301,7 @@
     {
         public Player(string name, int money, Inventory inventory) : base(name, inventory, 2000)
         {
-            Inventory.Items.Add(new Item("Old sock", 1, 3, 2));
-            Inventory.Items.Add(new Food("Apple", 5, 5, 10));
+
         }
     }
 
@@ -264,9 +309,7 @@
     {
         public NPC(string name, int money, Inventory inventory) : base(name, inventory, money)
         {
-            Inventory.Items.Add(new MeleeWeapon("Small axe", 200, 15, false, 100, 3));
-            Inventory.Items.Add(new MeleeWeapon("Big sword", 300, 25, true, 200, 2));
-            Inventory.Items.Add(new Food("Small potion", 100, 50, 10, 5));
+
         }
     }
 }
