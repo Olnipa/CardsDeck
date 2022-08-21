@@ -6,13 +6,15 @@
         {
             int initialMoney = 1000;
             bool isWorking = true;
-            Inventory playerInventory = new Inventory(new List<Item>()
-            { (new Item("Old sock", 1, 3, 2)),
-              (new Food("Apple", 5, 5, 10)) });
-            Inventory nPCInventory = new Inventory(new List<Item>()
-            { (new MeleeWeapon("Small axe", 200, 15, false, 100, 3)),
-              (new MeleeWeapon("Big sword", 300, 25, true, 200, 2)),
-              (new Food("Small potion", 100, 50, 10, 5)) });
+            Inventory playerInventory = new Inventory(new List<Stack>()
+            {   new Stack(new Item("Old sock", 1, 3), 2),
+                new Stack(new Food("Apple", 5, 5, 10), 3)
+            });
+            Inventory nPCInventory = new Inventory(new List<Stack>()
+            {   new Stack(new MeleeWeapon("Small axe", 200, 15, false, 100), 3),
+                new Stack(new MeleeWeapon("Big sword", 300, 25, true, 200), 2),
+                new Stack(new Food("Small potion", 100, 50, 10), 5)
+            });
             NPC seller = new NPC("John Seller", initialMoney, nPCInventory);
             Player player1 = new Player("Bill Buyer", initialMoney, playerInventory);
 
@@ -57,70 +59,70 @@
 
     class Inventory
     {
-        private List<Item> _items;
+        private List<Stack> _stacks;
 
-        public Inventory(List<Item> items)
+        public Inventory(List<Stack> stacks)
         {
-            _items = items;
+            _stacks = stacks;
         }
 
         public int GetCount()
         {
-            return _items.Count;
+            return _stacks.Count;
         }
 
-        public int GetItemWeight(int itemIndex)
+        public int GetItemWeight(int stackIndex)
         {
-            return _items[itemIndex].Weight;
+            return _stacks[stackIndex].GetItemWeight();
         }
 
-        public int GetItemPrice(int itemIndex)
+        public int GetItemPrice(int stackIndex)
         {
-            return _items[itemIndex].Price;
+            return _stacks[stackIndex].GetItemPrice();
         }
 
-        public int GetItemQuantity(int itemIndex)
+        public int GetItemQuantity(int stackIndex)
         {
-            return _items[itemIndex].Quantity;
+            return _stacks[stackIndex].Quantity;
         }
 
-        public string GetItemName(int itemIndex)
+        public string GetItemName(int stackIndex)
         {
-            return _items[itemIndex].Name;
+            return _stacks[stackIndex].GetItemName();
         }
 
-        public void AddItem(Item newItem)
+        public void AddItem(Stack newItem)
         {
-            _items.Add(newItem);
+            _stacks.Add(newItem);
         }
 
-        public void AddItemQuantity(int itemIndex, int quantityForIncrease)
+        public void AddItemQuantity(int stackIndex, int quantityForIncrease)
         {
-            _items[itemIndex].IncreaseQuantity(quantityForIncrease);
+            _stacks[stackIndex].IncreaseQuantity(quantityForIncrease);
         }
 
-        public void RemoveItem(int itemIndex)
+        public void RemoveItem(int stackIndex)
         {
-            _items.RemoveAt(itemIndex);
+            _stacks.RemoveAt(stackIndex);
         }
 
-        public void RemoveItemQuantity(int itemIndex, int quantityForDecrease)
+        public void RemoveItemQuantity(int stackIndex, int quantityForDecrease)
         {
-            _items[itemIndex].DecreaseQuantity(quantityForDecrease);
+            _stacks[stackIndex].DecreaseQuantity(quantityForDecrease);
 
-            if (GetItemQuantity(itemIndex) == 0)
+            if (GetItemQuantity(stackIndex) == 0)
             {
-                RemoveItem(itemIndex);
+                RemoveItem(stackIndex);
             }
         }
 
         public void ShowItems()
         {
-            if (_items.Count > 0)
+            if (_stacks.Count > 0)
             {
-                for (int i = 0; i < _items.Count; i++)
+                for (int i = 0; i < _stacks.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1}. {_items[i].Name}: Price - {_items[i].Price}. Quantity - {_items[i].Quantity} pcs.");
+                    Console.WriteLine($"{i + 1}. {_stacks[i].GetItemName()}: Price - {_stacks[i].GetItemPrice()}. Quantity - {_stacks[i].Quantity} pcs.");
                 }
             }
             else
@@ -130,20 +132,30 @@
         }
     }
 
-    class Item
+    class Stack
     {
-        protected const int DefaultQuantity = 1;
-        public string Name { get; private set; }
-        public int Price { get; private set; }
-        public int Weight { get; private set; }
+        private Item _item;
         public int Quantity { get; protected set; }
 
-        public Item(string name, int price, int weight, int quantity = DefaultQuantity)
+        public Stack(Item item, int quantity)
         {
-            Name = name;
-            Price = price;
-            Weight = weight;
+            _item = item;
             Quantity = quantity;
+        }
+
+        public string GetItemName()
+        {
+            return _item.Name;
+        }
+
+        public int GetItemWeight()
+        {
+            return _item.Weight;
+        }
+
+        public int GetItemPrice()
+        {
+            return _item.Price;
         }
 
         public void DecreaseQuantity(int quantityForDecrease)
@@ -154,7 +166,7 @@
             }
             else
             {
-                Console.WriteLine($"Not enough quantity of {Name}");
+                Console.WriteLine($"Not enough quantity of {_item.Name}");
             }
         }
 
@@ -163,17 +175,29 @@
             Quantity += quantityForIncrease;
         }
     }
+    class Item
+    {
+        public string Name { get; private set; }
+        public int Price { get; private set; }
+        public int Weight { get; private set; }
+
+        public Item(string name, int price, int weight)
+        {
+            Name = name;
+            Price = price;
+            Weight = weight;
+        }
+    }
 
     class MeleeWeapon : Item
     {
         public bool UseTwoHands { get; private set; }
         public int Damage { get; private set; }
 
-        public MeleeWeapon(string name, int price, int damage, bool useTwoHands, int weight, int quantity = DefaultQuantity) : base(name, price, weight)
+        public MeleeWeapon(string name, int price, int damage, bool useTwoHands, int weight) : base(name, price, weight)
         {
             UseTwoHands = useTwoHands;
             Damage = damage;
-            Quantity = quantity;
         }
     }
 
@@ -181,10 +205,9 @@
     {
         public int HealthIncreae { get; private set; }
 
-        public Food(string name, int price, int healthIncrease, int weight, int quantity = DefaultQuantity) : base(name, price, weight)
+        public Food(string name, int price, int healthIncrease, int weight) : base(name, price, weight)
         {
             HealthIncreae = healthIncrease;
-            Quantity = quantity;
         }
     }
 
@@ -211,7 +234,7 @@
         {
             if (seller._inventory.GetCount() > 0)
             {
-                Console.WriteLine("Items fo sale:");
+                Console.WriteLine("Items for sale:");
                 seller._inventory.ShowItems();
 
                 int itemIndex = ReadNumber("Write item index for buy:") - 1;
@@ -249,7 +272,6 @@
             }
         }
 
-
         private void AddItemQuantity(Character Seller, int itemIndex, int quantityForIncrease)
         {
             bool itemNotExistInBuyerInventory = true;
@@ -269,7 +291,7 @@
             {
                 int itemPrice = Seller._inventory.GetItemPrice(itemIndex);
                 int itemWeight = Seller._inventory.GetItemWeight(itemIndex);
-                _inventory.AddItem(new Item(itemName, itemPrice, itemWeight, quantityForIncrease));
+                _inventory.AddItem(new Stack(new Item(itemName, itemPrice, itemWeight), quantityForIncrease));
             }
         }
 
