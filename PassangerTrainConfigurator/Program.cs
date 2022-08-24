@@ -27,7 +27,7 @@
                 switch (choosenMenu)
                 {
                     case StartTrainConfigurating:
-                        trainConfigurator.CreateNewTrainPlan();
+                        trainConfigurator.CreateNewRoutePlan();
                         break;
                     case Exit:
                         isWorking = false;
@@ -78,6 +78,7 @@
         {
             return _cities.Count;
         }
+
         private void ShowCity(int index)
         {
             Console.WriteLine($"Index {index + 1}: {_cities[index].Name}.");
@@ -155,7 +156,7 @@
             Console.WriteLine("====================================================\n");
         }
 
-        public void CreateNewTrainPlan()
+        public void CreateNewRoutePlan()
         {
             Console.Clear();
             ShowCurrentRouteInformation();
@@ -182,6 +183,7 @@
             SendTrain();
             Console.WriteLine($"\nTrain successfully sent.");
         }
+
         public void ReadAnyKey(string text = "\nPress any key to continue...")
         {
             Console.Write(text);
@@ -359,30 +361,30 @@
 
     class Train
     {
-        private List<Wagon> _train;
+        private List<Wagon> _wagons;
         public bool IsSent { get; private set; }
         public int Passengers { get; private set; }
 
         public Train(List<Wagon> wagons, int passengers)
         {
-            _train = wagons;
+            _wagons = wagons;
             Passengers = passengers;
             IsSent = false;
         }
 
         public int GetCountOfWagons()
         {
-            return _train.Count;
+            return _wagons.Count;
         }
 
         public void AddWagon(Wagon wagon)
         {
-            _train.Add(wagon);
+            _wagons.Add(wagon);
         }
 
         public int GetWagonCapacity(int index)
         {
-            return _train[index].GetCapacity();
+            return _wagons[index].GetCapacity();
         }
 
         public int GetSeatsAmount()
