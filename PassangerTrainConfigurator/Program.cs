@@ -87,23 +87,16 @@
 
     class Route
     {
-        private City _cityDeparture;
-        private City _cityDestination;
+        private City _departure;
+        private City _destination;
+
+        public string Departure { get { return _departure.Name; } }
+        public string Destination { get { return _destination.Name; } }
 
         public Route(City cityDeparture, City cityDestination)
         {
-            _cityDeparture = cityDeparture;
-            _cityDestination = cityDestination;
-        }
-
-        public string GetDepartureCityName()
-        {
-            return _cityDeparture.Name;
-        }
-
-        public string GetDestinationCityName()
-        {
-            return _cityDestination.Name;
+            _departure = cityDeparture;
+            _destination = cityDestination;
         }
     }
 
@@ -136,7 +129,7 @@
                     if (_trains[i].IsSent == true)
                     {
                         atLeastOneTrainIsSent = true;
-                        string currentRoute = _routes[i].GetDepartureCityName() + " - " + _routes[i].GetDestinationCityName();
+                        string currentRoute = _routes[i].Departure + " - " + _routes[i].Destination;
                         currentRouteInformation = $"{currentRoute}.\nTrain consist of {_trains[i].GetCountOfWagons()} wagons." +
                             $"\nQuantity of passengers: {_trains[i].Passengers} \\ {_trains[i].GetSeatsAmount()}";
                         Console.WriteLine($"Current route of train {i + 1}: {currentRouteInformation}.\n");
@@ -161,8 +154,8 @@
             Console.Clear();
             ShowCurrentRouteInformation();
             CreateRoute();
-            string departureCity = _routes[^1].GetDepartureCityName();
-            string destinationCity = _routes[^1].GetDestinationCityName();
+            string departureCity = _routes[^1].Departure;
+            string destinationCity = _routes[^1].Destination;
             Console.WriteLine($"Route {departureCity} - {destinationCity} successfully created.");
             ReadAnyKey();
 
@@ -192,14 +185,14 @@
 
         private void SendTrain()
         {
-            Console.WriteLine("\n--------------- (Step 4 \\ 4) Send the train on its way ---------------");
+            Console.WriteLine("--------------- (Step 4 \\ 4) Send the train on its way ---------------\n");
             ReadAnyKey("Press any key to send train...");
             _trains[^1].SendTrain();
         }
 
         private void CreateNewTrain(int amountOfPassengers)
         {
-            Console.WriteLine("\n--------------- (Step 3 \\ 4) Train formation ---------------");
+            Console.WriteLine("--------------- (Step 3 \\ 4) Train formation ---------------");
             int amountOfSeatsInTrain = 0;
 
             Train train = new Train(new List<Wagon>(), amountOfPassengers);
@@ -207,8 +200,8 @@
             while (amountOfPassengers > amountOfSeatsInTrain)
             {
                 int routeIndex = _routes.Count - 1;
-                string departureCity = _routes[routeIndex].GetDepartureCityName();
-                string destinationeCity = _routes[routeIndex].GetDestinationCityName();
+                string departureCity = _routes[routeIndex].Departure;
+                string destinationeCity = _routes[routeIndex].Destination;
 
                 Console.WriteLine("\nNot enough seats. Need to add more wagons.");
                 Console.WriteLine($"\nChoose type of wagon № {train.GetCountOfWagons() + 1} from below list for train {departureCity} - {destinationeCity}.");
@@ -218,11 +211,11 @@
                 FirstClassWagon firstClassWagon = new FirstClassWagon();
                 SecondClassWagon secondClassWagon = new SecondClassWagon();
 
-                if (_wagonsType.GetTypeName(wagonTypeIndex) == firstClassWagon.GetTypeName())
+                if (_wagonsType.GetTypeName(wagonTypeIndex) == firstClassWagon.Type)
                 {
                     train.AddWagon(new Wagon(firstClassWagon));
                 }
-                else if (_wagonsType.GetTypeName(wagonTypeIndex) == secondClassWagon.GetTypeName())
+                else if (_wagonsType.GetTypeName(wagonTypeIndex) == secondClassWagon.Type)
                 {
                     train.AddWagon(new Wagon(secondClassWagon));
                 }
@@ -238,7 +231,7 @@
         
         private int GenerateAmountOfPassengers()
         {
-            Console.WriteLine("\n--------------- (Step 2 \\ 4) Ticket selling --------------- \n");
+            Console.WriteLine("--------------- (Step 2 \\ 4) Ticket selling --------------- \n");
             int minTicketsSolded = 70;
             int maxTicketsSolded = 200;
             Random random = new Random();
@@ -306,16 +299,6 @@
         }
 
         protected Wagon() { }
-
-        public int GetCapacity()
-        {
-            return MaxCapacity;
-        }
-
-        public string GetTypeName()
-        {
-            return Type;
-        }
     }
 
     class FirstClassWagon : Wagon
@@ -347,14 +330,14 @@
 
         public string GetTypeName(int index)
         {
-            return _wagons[index].GetTypeName();
+            return _wagons[index].Type;
         }
 
         public void ShowAllWagonTypes()
         {
             for (int i = 0; i < _wagons.Count; i++)
             {
-                Console.WriteLine($"Index {i + 1}. Wagon type - {_wagons[i].GetTypeName()}. Capacity - {_wagons[i].GetCapacity()} passengers.");
+                Console.WriteLine($"Index {i + 1}. Wagon type - {_wagons[i].Type}. Capacity - {_wagons[i].MaxCapacity} passengers.");
             }
         }
     }
@@ -384,7 +367,7 @@
 
         public int GetWagonCapacity(int index)
         {
-            return _wagons[index].GetCapacity();
+            return _wagons[index].MaxCapacity;
         }
 
         public int GetSeatsAmount()
