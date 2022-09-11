@@ -55,6 +55,7 @@
     class CityDataBase
     {
         private List<City> _cities;
+        public int Count { get { return _cities.Count; } }
 
         public CityDataBase()
         {
@@ -72,11 +73,6 @@
             {
                 ShowCity(i);
             }
-        }
-
-        public int GetCount()
-        {
-            return _cities.Count;
         }
 
         private void ShowCity(int index)
@@ -205,17 +201,17 @@
 
                 Console.WriteLine("\nNot enough seats. Need to add more wagons.");
                 Console.WriteLine($"\nChoose type of wagon № {train.GetCountOfWagons() + 1} from below list for train {departureCity} - {destinationeCity}.");
-                _wagonsType.ShowAllWagonTypes();
+                WagonTypeDataBase.ShowAllWagonTypes();
                 int wagonTypeIndex = ReadIndex("\nWrite wagon type index to add it in train: ");
 
                 FirstClassWagon firstClassWagon = new FirstClassWagon();
                 SecondClassWagon secondClassWagon = new SecondClassWagon();
 
-                if (_wagonsType.GetTypeName(wagonTypeIndex) == firstClassWagon.Type)
+                if (WagonTypeDataBase.GetTypeName(wagonTypeIndex) == firstClassWagon.Type)
                 {
                     train.AddWagon(new Wagon(firstClassWagon));
                 }
-                else if (_wagonsType.GetTypeName(wagonTypeIndex) == secondClassWagon.Type)
+                else if (WagonTypeDataBase.GetTypeName(wagonTypeIndex) == secondClassWagon.Type)
                 {
                     train.AddWagon(new Wagon(secondClassWagon));
                 }
@@ -267,7 +263,7 @@
                 {
                     index--;
 
-                    if (index >= 0 & index < _cityDataBase.GetCount())
+                    if (index >= 0 & index < _cityDataBase.Count)
                     {
                         indexIsOutOfRange = false;
                         break;
@@ -321,19 +317,19 @@
 
     class WagonTypeDataBase
     {
-        private List<Wagon> _wagons;
+        private static List<Wagon> _wagons;
 
         public WagonTypeDataBase()
         {
             _wagons = new List<Wagon>() { new FirstClassWagon(), new SecondClassWagon() };
         }
 
-        public string GetTypeName(int index)
+        public static string GetTypeName(int index)
         {
             return _wagons[index].Type;
         }
 
-        public void ShowAllWagonTypes()
+        public static void ShowAllWagonTypes()
         {
             for (int i = 0; i < _wagons.Count; i++)
             {
