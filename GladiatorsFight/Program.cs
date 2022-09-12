@@ -17,7 +17,7 @@
 
                 arena.BeginCombat();
 
-                Console.WriteLine("\nPress any key to try more, or write \"Exit\" to exit.");
+                Console.WriteLine("\nPress Enter to try more, or write \"Exit\" to exit.");
                 string choosenMenu = Console.ReadLine();
                 string exitButton = "exit";
 
@@ -134,17 +134,6 @@
             Color = color;
         }
 
-        public Fighter(Fighter fighter, string color = "Red")
-        {
-            Name = fighter.Name;
-            Health = CurrentHealth = fighter.Health;
-            DamageMin = fighter.DamageMin;
-            DamageMax = fighter.DamageMax;
-            Agility = fighter.Agility;
-            Accuracy = fighter.Accuracy;
-            Color = color;
-        }
-
         public virtual Fighter Clone(string color = "red")
         {
             Fighter clone = new Fighter(Name, Health, DamageMin, DamageMax, Agility, Accuracy, color);
@@ -229,10 +218,6 @@
         {
         }
 
-        public Elf(Elf fighter, string color = "red") : base (fighter, color)
-        {
-        }
-
         public override Fighter Clone(string color)
         {
             Fighter clone = base.Clone(color);
@@ -259,10 +244,6 @@
         {
         }
 
-        public Orc(Orc fighter, string color = "red") : base(fighter, color)
-        {
-        }
-
         public override Fighter Clone(string color)
         {
             Fighter clone = base.Clone(color);
@@ -275,10 +256,6 @@
         private float _vampireHealingCoefficient = 0.5f;
 
         public Vampire(string name, int health, int damageMin, int damageMax, int agility, int accuracy, string color = "Red") : base(name, health, damageMin, damageMax, agility, accuracy, color)
-        {
-        }
-
-        public Vampire(Vampire fighter, string color = "red") : base(fighter, color)
         {
         }
 
@@ -311,11 +288,6 @@
         public Draconian(string name, int health, int damageMin, int damageMax, int agility, int accuracy, int firePoints, string color = "Red") : base(name, health, damageMin, damageMax, agility, accuracy, color)
         {
             _firePoints = _currentFirePoints = firePoints;
-        }
-
-        public Draconian(Draconian fighter, string color = "red") : base(fighter, color)
-        {
-            _firePoints = _currentFirePoints = fighter._firePoints;
         }
 
         public override Fighter Clone(string color)
@@ -355,15 +327,6 @@
             _currentDivineScore = Convert.ToInt32(_divineScore / 2);
             _prayerIsUsed = false;
             _prayerRounds = _prayerRoundsLeft = 2;
-        }
-
-        public Paladin(Paladin fighter, string color = "red") : base(fighter, color)
-        {
-            _divineScore = fighter._divineScore;
-            _currentDivineScore = fighter._currentDivineScore;
-            _prayerIsUsed = fighter._prayerIsUsed;
-            _prayerRounds = fighter._prayerRounds;
-            _prayerRoundsLeft = fighter._prayerRoundsLeft;
         }
 
         public override Fighter Clone(string color)
