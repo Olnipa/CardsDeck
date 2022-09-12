@@ -4,45 +4,44 @@
     {
         static void Main(string[] args)
         {
-            ArenaOfGladiators arena = new ArenaOfGladiators();
+            bool isWorking = true;
 
-            Console.WriteLine("_____________ Welcom to the combat arena _____________\n\n" +
-                "You need to choose 2 fighters from below list:\n");
-            ArenaOfGladiators.ShowFighters();
-            Console.WriteLine();
-
-            arena.BeginCombat();
-
-            Console.WriteLine("\nPress any key to try more, or write \"n\" to exit.");
-            string choosenMenu = Console.ReadLine();
-
-            switch (choosenMenu)
+            while (isWorking)
             {
-                case "n":
-                    break;
-                default:
-                    Console.Clear();
-                    Main(args);
-                    break;
+                ArenaOfGladiators arena = new ArenaOfGladiators();
+
+                Console.WriteLine("_____________ Welcom to the combat arena _____________\n\n" +
+                    "You need to choose 2 fighters from below list:\n");
+                arena.ShowFighters();
+                Console.WriteLine();
+
+                arena.BeginCombat();
+
+                Console.WriteLine("\nPress any key to try more, or write \"Exit\" to exit.");
+                string choosenMenu = Console.ReadLine();
+                string exitButton = "exit";
+
+                if (choosenMenu == exitButton.ToLower())
+                    isWorking = false;
             }
         }
     }
 
     class ArenaOfGladiators
     {
-        private static List<Fighter> _fighters;
+        private List<Fighter> _fighters;
 
         public ArenaOfGladiators()
         {
             _fighters = new List <Fighter>() {
-                new Elf("Elf", health: 150, damageMin: 10, 17, agility: 17, accuracy: 8),
+                new Elf("Elf", health: 150, damageMin: 10, 17, agility: 17, accuracy: 8, "green"),
                 new Orc("Orc", health: 300, damageMin: 17, 25, agility: 13, accuracy: 2),
                 new Vampire("Vampire", health: 150, damageMin: 10, 17, agility: 16, accuracy: 7),
                 new Draconian("Draconian", health: 200, damageMin: 11, 19, agility: 14, accuracy: 6, firePoints: 4),
                 new Paladin("Paladin", health: 210, damageMin: 13, 20, agility: 13, accuracy: 6, divineScore: 5)};
         }
 
-        static public int ReadIndex(string text)
+        public int ReadIndex(string text)
         {
             bool indexIsOutOfRange = true;
             int errorCode = -1;
@@ -76,7 +75,7 @@
             return value;
         }
 
-        static public void ShowFighters()
+        public void ShowFighters()
         {
             for (int i = 0; i < _fighters.Count; i++)
             {
@@ -85,15 +84,14 @@
                     $"Accuracy: {_fighters[i].Accuracy}.");
             }
         }
-
+ 
         public void BeginCombat()
         {
             int roundNumber = 1;
             int fighterIndex = ReadIndex("Enter the index of the fighter for the red corner:");
-            Fighter redFighter = TransformateFighterClass(_fighters[fighterIndex]);
+            Fighter redFighter = _fighters[fighterIndex].Clone();
             fighterIndex = ReadIndex("Enter the index of the fighter for the blue corner:");
-            Fighter blueFighter = TransformateFighterClass(_fighters[fighterIndex]);
-            blueFighter.MakeFighterColorBlue();
+            Fighter blueFighter = _fighters[fighterIndex].Clone("blue");
 
             while (redFighter.CurrentHealth > 0 & blueFighter.CurrentHealth > 0)
             {
@@ -107,35 +105,10 @@
             if (redFighter.CurrentHealth <= 0 & blueFighter.CurrentHealth <= 0)
                 Console.WriteLine("________________________ Draw ________________________");
             else if (redFighter.CurrentHealth <= 0)
-                Console.WriteLine("________________________ " + blueFighter.Name + " Win ________________________");
+                Console.WriteLine("________________________ " + blueFighter.Name + "-" + blueFighter.Color + " Win ________________________");
             else if (blueFighter.CurrentHealth <= 0)
-                Console.WriteLine("________________________ " + redFighter.Name + " Win ________________________");
+                Console.WriteLine("________________________ " + redFighter.Name + "-" + redFighter.Color + " Win ________________________");
             Console.WriteLine();
-        }
-
-        private Fighter TransformateFighterClass(Fighter choosenfighter)
-        {
-            switch (choosenfighter)
-            {
-                case Elf fighter:
-                    Elf fighterElf = new Elf(fighter);
-                    return fighterElf;
-                case Orc fighter:
-                    Orc fighterOrc = new Orc(fighter);
-                    return fighterOrc;
-                case Vampire fighter:
-                    Vampire fighterVampire = new Vampire(fighter);
-                    return fighterVampire;
-                case Draconian fighter:
-                    Draconian fighterDraconian = new Draconian(fighter);
-                    return fighterDraconian;
-                case Paladin fighter:
-                    Paladin fighterPaladin = new Paladin(fighter);
-                    return fighterPaladin;
-                default:
-                    Console.WriteLine("Error. Can not transform class of fighter.");
-                    return choosenfighter;
-            }
         }
     }
 
@@ -172,10 +145,16 @@
             Color = color;
         }
 
+        public virtual Fighter Clone(string color = "red")
+        {
+            Fighter clone = new Fighter(Name, Health, DamageMin, DamageMax, Agility, Accuracy, color);
+            return clone;
+        }
+
         public virtual void MakeFighterMove(Fighter victim, int roundNumber)
         {
             int damage = CalculateDamage(victim, roundNumber, out int chanceHit);
-            victim.TakeDamage(damage);
+            victim.GetDamage(damage);
             ShowSystemMessage(victim, chanceHit, damage);
         }
 
@@ -184,9 +163,13 @@
             Color = "blue";
         }
 
-        public void TakeDamage(int damage)
+        public int GetDamage(int damage)
         {
+            int healthBeforeDamage = CurrentHealth;
             CurrentHealth -= damage;
+            int takenDamage = healthBeforeDamage - CurrentHealth;
+
+            return takenDamage;
         }
 
         protected virtual int CalculateDamage(Fighter enemy, int roundNumber, out int chanceHit)
@@ -250,6 +233,12 @@
         {
         }
 
+        public override Fighter Clone(string color)
+        {
+            Fighter clone = base.Clone(color);
+            return clone;
+        }
+
         protected override int GenerateChanceHit(int roundNumber)
         {
             Random random = new Random();
@@ -273,11 +262,17 @@
         public Orc(Orc fighter, string color = "red") : base(fighter, color)
         {
         }
+
+        public override Fighter Clone(string color)
+        {
+            Fighter clone = base.Clone(color);
+            return clone;
+        }
     }
 
     class Vampire : Fighter
     {
-        private float vampireHealingCoefficient = 0.6f;
+        private float _vampireHealingCoefficient = 0.5f;
 
         public Vampire(string name, int health, int damageMin, int damageMax, int agility, int accuracy, string color = "Red") : base(name, health, damageMin, damageMax, agility, accuracy, color)
         {
@@ -287,17 +282,24 @@
         {
         }
 
+        public override Fighter Clone(string color)
+        {
+            Vampire clone = new Vampire(Name, Health, DamageMin, DamageMax, Agility, Accuracy, color);
+            clone._vampireHealingCoefficient = _vampireHealingCoefficient;
+            return clone;
+        }
+
         public override void MakeFighterMove(Fighter victim, int roundNumber)
         {
             int damage = CalculateDamage(victim, roundNumber, out int chanceHit);
-            victim.TakeDamage(damage);
-            DrinkBlood(damage);
+            int takenHealth = victim.GetDamage(damage);
+            DrinkBlood(takenHealth);
             ShowSystemMessage(victim, chanceHit, damage);
         }
 
-        private void DrinkBlood(int damage)
+        private void DrinkBlood(int takenHealth)
         {
-            CurrentHealth += Convert.ToInt32(damage * vampireHealingCoefficient);
+            CurrentHealth += Convert.ToInt32(takenHealth * _vampireHealingCoefficient);
         }
     }
 
@@ -314,6 +316,13 @@
         public Draconian(Draconian fighter, string color = "red") : base(fighter, color)
         {
             _firePoints = _currentFirePoints = fighter._firePoints;
+        }
+
+        public override Fighter Clone(string color)
+        {
+            Draconian clone = new Draconian(Name, Health, DamageMin, DamageMax, Agility, Accuracy, _firePoints, color);
+            clone._currentFirePoints = _currentFirePoints;
+            return clone;
         }
 
         protected override int CalculateDamage(Fighter enemy, int roundNumber, out int chanceHit)
@@ -355,6 +364,16 @@
             _prayerIsUsed = fighter._prayerIsUsed;
             _prayerRounds = fighter._prayerRounds;
             _prayerRoundsLeft = fighter._prayerRoundsLeft;
+        }
+
+        public override Fighter Clone(string color)
+        {
+            Paladin clone = new Paladin(Name, Health, DamageMin, DamageMax, Agility, Accuracy, _divineScore, color);
+            clone._currentDivineScore = _currentDivineScore;
+            clone._prayerIsUsed = _prayerIsUsed;
+            clone._prayerRounds = _prayerRounds;
+            clone._prayerRoundsLeft = _prayerRoundsLeft;
+            return clone;
         }
 
         public override void MakeFighterMove(Fighter victim, int roundNumber)
