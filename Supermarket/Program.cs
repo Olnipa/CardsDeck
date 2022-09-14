@@ -264,6 +264,7 @@
     class ProductStack
     {
         private Product _product;
+
         public int Quaintity { get; private set; }
 
         public ProductStack(Product product, int quaintity)
