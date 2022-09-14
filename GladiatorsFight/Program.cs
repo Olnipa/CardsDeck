@@ -147,11 +147,6 @@
             ShowSystemMessage(victim, chanceHit, damage);
         }
 
-        public void MakeFighterColorBlue()
-        {
-            Color = "blue";
-        }
-
         public int GetDamage(int damage)
         {
             int healthBeforeDamage = CurrentHealth;
@@ -220,8 +215,7 @@
 
         public override Fighter Clone(string color)
         {
-            Fighter clone = base.Clone(color);
-            return clone;
+            return new Elf(Name, Health, DamageMin, DamageMax, Agility, Accuracy, color);
         }
 
         protected override int GenerateChanceHit(int roundNumber)
@@ -246,8 +240,7 @@
 
         public override Fighter Clone(string color)
         {
-            Fighter clone = base.Clone(color);
-            return clone;
+            return new Orc(Name, Health, DamageMin, DamageMax, Agility, Accuracy, color);
         }
     }
 
@@ -262,7 +255,6 @@
         public override Fighter Clone(string color)
         {
             Vampire clone = new Vampire(Name, Health, DamageMin, DamageMax, Agility, Accuracy, color);
-            clone._vampireHealingCoefficient = _vampireHealingCoefficient;
             return clone;
         }
 
@@ -293,7 +285,6 @@
         public override Fighter Clone(string color)
         {
             Draconian clone = new Draconian(Name, Health, DamageMin, DamageMax, Agility, Accuracy, _firePoints, color);
-            clone._currentFirePoints = _currentFirePoints;
             return clone;
         }
 
@@ -332,10 +323,6 @@
         public override Fighter Clone(string color)
         {
             Paladin clone = new Paladin(Name, Health, DamageMin, DamageMax, Agility, Accuracy, _divineScore, color);
-            clone._currentDivineScore = _currentDivineScore;
-            clone._prayerIsUsed = _prayerIsUsed;
-            clone._prayerRounds = _prayerRounds;
-            clone._prayerRoundsLeft = _prayerRoundsLeft;
             return clone;
         }
 
