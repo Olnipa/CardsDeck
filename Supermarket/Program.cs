@@ -12,7 +12,7 @@
 
     class Supermarket
     {
-        private int Money;
+        private int _money;
         private Queue<Client> _clients;
         private List<Product> _priceList;
         private List<ProductStack> _warehouse;
@@ -27,7 +27,7 @@
             AddProductsToWarehouse(productCountInWarehouse);
             _clients = new Queue<Client>();
             CreateNewClient(clientsQuantity);
-            Money = money;
+            _money = money;
         }
 
         public void StartWork()
@@ -35,7 +35,7 @@
             Console.WriteLine("Welcome to cashier simulator game!\nPress any key to start this amazing game...\n");
             Console.ReadKey(true);
 
-            Console.WriteLine($"Money in the shop - {Money} USD\n");
+            Console.WriteLine($"Money in the shop - {_money} USD\n");
 
             while (_clients.Count > 0)
             {
@@ -49,14 +49,14 @@
             Console.WriteLine("Shop is closed.\nBalance of products in the shop:");
             ShowAllProducts();
             Console.WriteLine();
-            Console.WriteLine($"Money in the shop - {Money} USD\n");
+            Console.WriteLine($"Money in the shop - {_money} USD\n");
         }
 
         private void ShowAllProducts()
         {
             for (int i = 0; i < _warehouse.Count; i++)
             {
-                Console.WriteLine($"{_warehouse[i].GetProductName()} - {_warehouse[i].Quaintity} pcs");
+                Console.WriteLine($"{_warehouse[i].Product.Name} - {_warehouse[i].Quantity} pcs");
             }
         }
 
@@ -97,11 +97,11 @@
                 
                 if (productIndex >= 0)
                 {
-                    basket.Add(new ProductStack(newProduct, GetProductsAmountToPutInBasket(productIndex)));
+                    int quantity = GetProducts(productIndex);
                     
-                    if (basket[basket.Count - 1].Quaintity == 0)
+                    if (quantity > 0)
                     {
-                        basket.RemoveAt(basket.Count - 1);
+                        basket.Add(new ProductStack(newProduct, quantity));
                     }
                 }
             }
@@ -109,11 +109,27 @@
             return basket;
         }
 
-        private int GetProductsAmountToPutInBasket(int productIndex)
+        private int GetProducts(int productIndex)
         {
             if (productIndex >= 0 & productIndex < _priceList.Count)
             {
-                return _warehouse[productIndex].TakeProductFromWarehouse();
+                Random random = new Random();
+                int minProductQuantity = 1;
+                int maxProductQuantity = 5;
+                int quantity = random.Next(minProductQuantity, maxProductQuantity);
+
+                if (_warehouse[productIndex].Quantity >= quantity)
+                {
+                    _warehouse[productIndex].ReduceProductQuantity(quantity);
+                    return quantity;
+                }
+                else if (_warehouse[productIndex].Quantity > 0)
+                {
+                    quantity = _warehouse[productIndex].Quantity;
+                    _warehouse[productIndex].ReduceProductQuantity(quantity);
+                    return quantity;
+                }
+                else return 0;
             }
             else
             {
@@ -146,8 +162,8 @@
         {
             Client nextClient = _clients.Dequeue();
             Console.WriteLine("Preliminary receipt:");
-            nextClient.ShowClientBasket();
-            nextClient.ShowClientMoney();
+            nextClient.ShowBasket();
+            nextClient.ShowMoney();
             int totalPrice = nextClient.GetTotalPrice();
             Console.WriteLine("\nTotal to be paid - " + totalPrice);
             Console.WriteLine("__________________________________________");
@@ -163,12 +179,12 @@
             }
 
             int moneyReceived = nextClient.GiveMoney();
-            Money += moneyReceived;
+            _money += moneyReceived;
 
             Console.WriteLine();
             Console.WriteLine("__________________________________________");
             Console.WriteLine("Final receipt:");
-            nextClient.ShowClientBasket();
+            nextClient.ShowBasket();
             Console.Write($"\nTotal paid: {moneyReceived}\n");
             Console.WriteLine("__________________________________________");
             Console.WriteLine();
@@ -179,7 +195,6 @@
     {
         private List<ProductStack> _basket;
         private int Money;
-        private int MoneyToPay;
 
         public Client(List<ProductStack> basket, int money)
         {
@@ -189,20 +204,19 @@
 
         public int GiveMoney()
         {
-            int tempMoneyToPay = MoneyToPay;
-            Money -= MoneyToPay;
-            MoneyToPay = 0;
-            return tempMoneyToPay;
+            int moneyToPay = GetTotalPrice();
+            Money -= moneyToPay;
+            return moneyToPay;
         }
 
         public string DiscardRandomProduct()
         {
             Random random = new Random();
             int itemIndex = random.Next(0, _basket.Count);
-            string discardedProduct = _basket[itemIndex].GetProductName();
+            string discardedProduct = _basket[itemIndex].Product.Name;
             _basket[itemIndex].ReduceProductQuantity();
 
-            if (_basket[itemIndex].Quaintity == 0)
+            if (_basket[itemIndex].Quantity == 0)
                 _basket.Remove(_basket[itemIndex]);
              
             return discardedProduct;
@@ -222,26 +236,16 @@
 
         public bool CheckSolvency()
         {
-            MoneyToPay = GetTotalPrice();
-
-            if (Money >= MoneyToPay)
-            {
-                return true;
-            }
-            else
-            {
-                MoneyToPay = 0;
-                return false;
-            }
+            return Money >= GetTotalPrice();
         }
 
-        public void ShowClientBasket()
+        public void ShowBasket()
         {
             if (_basket.Count > 0)
             {
                 for (int i = 0; i < _basket.Count; i++)
                 {
-                    Console.WriteLine($"{_basket[i].GetProductName()} - {_basket[i].Quaintity} pcs");
+                    Console.WriteLine($"{_basket[i].Product.Name} - {_basket[i].Quantity} pcs");
                 }
             }
             else
@@ -250,70 +254,38 @@
             }
         }
 
-        public void ShowClientMoney()
+        public void ShowMoney()
         {
             Console.WriteLine($"Client money - {Money} USD");
         }
 
         private int GetSumOfProducts(int itemIndex)
         {
-            return _basket[itemIndex].GetProductPrice() * _basket[itemIndex].Quaintity;
+            return _basket[itemIndex].Product.Price * _basket[itemIndex].Quantity;
         }
     }
 
     class ProductStack
     {
-        private Product _product;
+        public Product Product { get; private set; }
 
-        public int Quaintity { get; private set; }
+        public int Quantity { get; private set; }
 
         public ProductStack(Product product, int quaintity)
         {
-            _product = product;
-            Quaintity = quaintity;
+            Product = product;
+            Quantity = quaintity;
         }
 
-        public int TakeProductFromWarehouse()
+        public void ReduceProductQuantity(int quantity = 1)
         {
-            Random random = new Random();
-            int minProductQuantity = 1;
-            int maxProductQuantity = 5;
-            int quantity = random.Next(minProductQuantity, maxProductQuantity);
-
-            if (Quaintity >= quantity)
-            {
-                Quaintity -= quantity;
-                return quantity;
-            }
-            else if (Quaintity > 0)
-            {
-                Quaintity = 0;
-                return Quaintity;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public void ReduceProductQuantity()
-        {
-            Quaintity--;
+            if (quantity > 0)
+                Quantity -= quantity;
         }
 
         public void IncreaseProductQuantity()
         {
-            Quaintity++;
-        }
-
-        public string GetProductName()
-        {
-            return _product.Name;
-        }
-
-        public int GetProductPrice()
-        {
-            return _product.Price;
+            Quantity++;
         }
     }
 
