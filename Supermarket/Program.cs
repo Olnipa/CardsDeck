@@ -14,17 +14,14 @@
     {
         private int _money;
         private Queue<Client> _clients;
-        private List<Product> _priceList;
         private List<ProductStack> _warehouse;
 
         public Supermarket(int clientsQuantity, int money = 0)
         {
             int productCountInWarehouse = 100;
-            _priceList = new List<Product>() {
-                new Product("Carrot", 5), new Product("Potato", 3), new Product("Tomato", 12),
-                new Product("Cucumber", 5), new Product("Eggs", 15), new Product("Meat", 20)};
+
             _warehouse = new List<ProductStack>();
-            AddProductsToWarehouse(productCountInWarehouse);
+            AddProducts(productCountInWarehouse, GeneratePriceList());
             _clients = new Queue<Client>();
             CreateNewClient(clientsQuantity);
             _money = money;
@@ -52,6 +49,14 @@
             Console.WriteLine($"Money in the shop - {_money} USD\n");
         }
 
+        private List<Product> GeneratePriceList()
+        {
+            List<Product> priceList = new List<Product>() {
+                new Product("Carrot", 5), new Product("Potato", 3), new Product("Tomato", 12),
+                new Product("Cucumber", 5), new Product("Eggs", 15), new Product("Meat", 20)};
+            return priceList;
+        }
+
         private void ShowAllProducts()
         {
             for (int i = 0; i < _warehouse.Count; i++)
@@ -60,11 +65,11 @@
             }
         }
 
-        private void AddProductsToWarehouse(int productsQuantity)
+        private void AddProducts(int productsQuantity, List<Product> pricelist)
         {
-            for (int i = 0; i < _priceList.Count; i++)
+            for (int i = 0; i < pricelist.Count; i++)
             {
-                _warehouse.Add(new ProductStack(_priceList[i], productsQuantity));
+                _warehouse.Add(new ProductStack(pricelist[i], productsQuantity));
             }
         }
 
@@ -76,8 +81,8 @@
             {
                 int minClientMoney = 30;
                 int maxClientMoney = 151;
-                int money = random.Next(minClientMoney, maxClientMoney);
-                _clients.Enqueue(new Client(GenerateBusket(), money));
+                int clientMoney = random.Next(minClientMoney, maxClientMoney);
+                _clients.Enqueue(new Client(GenerateBusket(), clientMoney));
             }
         }
 
@@ -87,10 +92,10 @@
 
             int minProductToBuy = 1;
             int maxProductToBuy = 10;
-            int ProductToBuy = random.Next(minProductToBuy, maxProductToBuy);
+            int productCount = random.Next(minProductToBuy, maxProductToBuy);
             List<ProductStack> basket = new List<ProductStack>();
 
-            for (int i = 0; i < ProductToBuy; i++)
+            for (int i = 0; i < productCount; i++)
             {
                 Product newProduct = GenerateProduct();
                 int productIndex = GetProductIndex(newProduct.Name);
@@ -111,7 +116,7 @@
 
         private int GetProducts(int productIndex)
         {
-            if (productIndex >= 0 & productIndex < _priceList.Count)
+            if (productIndex >= 0 & productIndex < _warehouse.Count)
             {
                 Random random = new Random();
                 int minProductQuantity = 1;
@@ -129,7 +134,10 @@
                     _warehouse[productIndex].ReduceProductQuantity(quantity);
                     return quantity;
                 }
-                else return 0;
+                else
+                {
+                    return 0;
+                }
             }
             else
             {
@@ -140,9 +148,9 @@
 
         private int GetProductIndex(string productName)
         {
-            for (int i = 0; i < _priceList.Count; i++)
+            for (int i = 0; i < _warehouse.Count; i++)
             {
-                if (productName == _priceList[i].Name)
+                if (productName == _warehouse[i].Product.Name)
                     return i;
             }
 
@@ -154,7 +162,7 @@
         {
             Random random = new Random();
 
-            Product product = new Product(_priceList[random.Next(0, _priceList.Count)]);
+            Product product = new Product(_warehouse[random.Next(0, _warehouse.Count)].Product);
             return product;
         }
 
@@ -171,14 +179,14 @@
 
             while (nextClient.CheckSolvency() == false)
             {
-                string discardedProduct = nextClient.DiscardRandomProduct();
+                string discardedProductName = nextClient.DiscardRandomProduct();
                 Console.Write($"Client does not have enought money. Press any key to throw out something from basket... ");
                 Console.ReadKey(true);
-                Console.WriteLine($"The cashier throws out one piece of {discardedProduct} from the cart.");
-                _warehouse[GetProductIndex(discardedProduct)].IncreaseProductQuantity();
+                Console.WriteLine($"\nThe cashier throws out one piece of {discardedProductName} from the cart.");
+                _warehouse[GetProductIndex(discardedProductName)].IncreaseProductQuantity();
             }
 
-            int moneyReceived = nextClient.GiveMoney();
+            int moneyReceived = nextClient.PayMoney();
             _money += moneyReceived;
 
             Console.WriteLine();
@@ -194,18 +202,18 @@
     class Client
     {
         private List<ProductStack> _basket;
-        private int Money;
+        private int _money;
 
         public Client(List<ProductStack> basket, int money)
         {
             _basket = basket;
-            Money = money;
+            _money = money;
         }
 
-        public int GiveMoney()
+        public int PayMoney()
         {
             int moneyToPay = GetTotalPrice();
-            Money -= moneyToPay;
+            _money -= moneyToPay;
             return moneyToPay;
         }
 
@@ -213,13 +221,13 @@
         {
             Random random = new Random();
             int itemIndex = random.Next(0, _basket.Count);
-            string discardedProduct = _basket[itemIndex].Product.Name;
+            string discardedProductName = _basket[itemIndex].Product.Name;
             _basket[itemIndex].ReduceProductQuantity();
 
             if (_basket[itemIndex].Quantity == 0)
                 _basket.Remove(_basket[itemIndex]);
              
-            return discardedProduct;
+            return discardedProductName;
         }
 
         public int GetTotalPrice()
@@ -236,7 +244,7 @@
 
         public bool CheckSolvency()
         {
-            return Money >= GetTotalPrice();
+            return _money >= GetTotalPrice();
         }
 
         public void ShowBasket()
@@ -256,7 +264,7 @@
 
         public void ShowMoney()
         {
-            Console.WriteLine($"Client money - {Money} USD");
+            Console.WriteLine($"Client money - {_money} USD");
         }
 
         private int GetSumOfProducts(int itemIndex)
