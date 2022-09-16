@@ -162,8 +162,7 @@
         {
             Random random = new Random();
 
-            Product product = new Product(_warehouse[random.Next(0, _warehouse.Count)].Product);
-            return product;
+            return new Product(_warehouse[random.Next(0, _warehouse.Count)].Product);
         }
 
         private void ServeNextClient()
