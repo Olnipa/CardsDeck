@@ -70,11 +70,11 @@ namespace War
 
             if (armyRed.Platoon.GetQuantityOfAliveSoldiers() <= 0)
             {
-                Console.WriteLine($"\n====== {armyBlue.Name} Win with {armyBlue.Platoon.GetQuantityOfAliveSoldiers()}/{armyBlue.Platoon.Soldiers.Count} alive soldiers. Best killer: {armyBlue.Platoon.FindBestKiller().PersonalNumber} with {armyBlue.Platoon.FindBestKiller().Kills} kills. Type - {armyBlue.Platoon.FindBestKiller().GetType()} ======");
+                Console.WriteLine($"\n====== {armyBlue.Name} Win with {armyBlue.Platoon.GetQuantityOfAliveSoldiers()}/{armyBlue.Platoon.Soldiers.Count} alive soldiers. Best killer: {armyBlue.Platoon.FindBestKiller().PersonalNumber} with {armyBlue.Platoon.FindBestKiller().Kills} kills. His type - {armyBlue.Platoon.FindBestKiller().GetType()} ======");
             }
             else
             {
-                Console.WriteLine($"\n====== {armyRed.Name} Win with {armyRed.Platoon.GetQuantityOfAliveSoldiers()}/{armyRed.Platoon.Soldiers.Count} alive soldiers. Best killer: {armyRed.Platoon.FindBestKiller().PersonalNumber} with {armyRed.Platoon.FindBestKiller().Kills} kills. Type - {armyRed.Platoon.FindBestKiller().GetType()} ======");
+                Console.WriteLine($"\n====== {armyRed.Name} Win with {armyRed.Platoon.GetQuantityOfAliveSoldiers()}/{armyRed.Platoon.Soldiers.Count} alive soldiers. Best killer: {armyRed.Platoon.FindBestKiller().PersonalNumber} with {armyRed.Platoon.FindBestKiller().Kills} kills. His type - {armyRed.Platoon.FindBestKiller().GetType()} ======");
             }
         }
     }
@@ -116,7 +116,7 @@ namespace War
             }
             else
             {
-                Console.WriteLine($"{enemy.PersonalNumber} missed. Health: {CurrentHealth}/{Health}");
+                Console.WriteLine($"{enemy.PersonalNumber} missed. Health of {PersonalNumber}: {CurrentHealth}/{Health}");
             }
         }
 
@@ -209,7 +209,7 @@ namespace War
                 Console.WriteLine($"Soldier {enemy.PersonalNumber} hit soldier {PersonalNumber} for {damage} damage. Health: {CurrentHealth}/{Health}");
             }
 
-            Console.WriteLine($"{enemy.PersonalNumber} missed. Health: {CurrentHealth}/{Health}");
+            Console.WriteLine($"{enemy.PersonalNumber} missed. Health of {PersonalNumber}: {CurrentHealth}/{Health}");
             enemy.IncreaseKills(this);
         }
     }
@@ -342,18 +342,6 @@ namespace War
         {
             Random random = new Random();
             return random.Next(minChance, maxChance);
-        }
-    }
-
-    class Fight
-    {
-        public Country Country1 { get; private set; }
-        public Country Country2 { get; private set; }
-
-        public Fight(Country country1, Country country2)
-        {
-            Country1 = country1;
-            Country2 = country2;
         }
     }
 }
