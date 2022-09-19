@@ -6,7 +6,6 @@ namespace War
     {
         static void Main(string[] args)
         {
-            Random random = new Random();
             Country armyRed = new Country("Redlandia");
             Country armyBlue = new Country("Blueland");
             
@@ -22,74 +21,39 @@ namespace War
 
             while (armyRed.Platoon.GetQuantityOfAliveSoldiers() > 0 && armyBlue.Platoon.GetQuantityOfAliveSoldiers() > 0)
             {
-                Country firstArmy;
-                Country secondArmy;
-                const int armyRedIndex = 1;
-                const int armyBlueIndex = 2;
-                int randomNumber = random.Next(armyRedIndex, armyBlueIndex + 1);
+                Country firstArmy = armyRed.DetermineInitiative(armyBlue, out Country secondArmy);
 
-                if (randomNumber == armyRedIndex)
-                {
-                    firstArmy = armyRed;
-                    secondArmy = armyBlue;
-                }
-                else
-                {
-                    firstArmy = armyBlue;
-                    secondArmy = armyRed;
-                }
+                Soldier firstSoldier = firstArmy.Platoon.GetAliveSoldier();
+                Soldier secondSoldier = secondArmy.Platoon.GetAliveSoldier();
 
-                int firstCountrySoldierIndex = firstArmy.Platoon.GetAliveSoldierIndex();
-                int secondCountrySoldierIndex = secondArmy.Platoon.GetAliveSoldierIndex();
-                Soldier firstSoldier = firstArmy.Platoon.Soldiers[firstCountrySoldierIndex];
-                Soldier secondSoldier = secondArmy.Platoon.Soldiers[secondCountrySoldierIndex];
-                int roundNumber = 1;
-                
-                while (secondSoldier.CurrentHealth > 0 && firstSoldier.CurrentHealth > 0)
-                {
-                    Console.WriteLine($"Round {roundNumber}");
-                    secondSoldier.TakeDamage(firstSoldier);
-
-                    if (secondSoldier.CurrentHealth > 0)
-                        firstSoldier.TakeDamage(secondSoldier);
-                    
-                    roundNumber++;
-                }
-
-                if (secondSoldier.CurrentHealth <= 0)
-                {
-                    Console.WriteLine($"\n{firstSoldier.PersonalNumber} Win with {firstSoldier.CurrentHealth}/{firstSoldier.Health} health.");
-                    Console.WriteLine($"{secondSoldier.PersonalNumber} is dead.\n");
-                }
-                else
-                {
-                    Console.WriteLine($"\n{secondSoldier.PersonalNumber} Win with {secondSoldier.CurrentHealth}/{secondSoldier.Health} health.");
-                    Console.WriteLine($"{firstSoldier.PersonalNumber} is dead.\n");
-                }
+                firstSoldier.StartFight(secondSoldier);
+                firstSoldier.ShowFinalInfo(secondSoldier);
             }
 
-            if (armyRed.Platoon.GetQuantityOfAliveSoldiers() <= 0)
-            {
-                Console.WriteLine($"\n====== {armyBlue.Name} Win with {armyBlue.Platoon.GetQuantityOfAliveSoldiers()}/{armyBlue.Platoon.Soldiers.Count} alive soldiers. Best killer: {armyBlue.Platoon.FindBestKiller().PersonalNumber} with {armyBlue.Platoon.FindBestKiller().Kills} kills. His type - {armyBlue.Platoon.FindBestKiller().GetType()} ======");
-            }
-            else
-            {
-                Console.WriteLine($"\n====== {armyRed.Name} Win with {armyRed.Platoon.GetQuantityOfAliveSoldiers()}/{armyRed.Platoon.Soldiers.Count} alive soldiers. Best killer: {armyRed.Platoon.FindBestKiller().PersonalNumber} with {armyRed.Platoon.FindBestKiller().Kills} kills. His type - {armyRed.Platoon.FindBestKiller().GetType()} ======");
-            }
+            armyRed.ShowFinalInfo(armyBlue);
+        }
+    }
+
+    static class UserUtils
+    {
+        public static int GetRandomNumber(int minChance = 0, int maxChance = 101)
+        {
+            Random random = new Random();
+            return random.Next(minChance, maxChance);
         }
     }
 
     class Soldier
     {
-        public string PersonalNumber { get; private set; }
-        public int Health { get; private set; }
         public int CurrentHealth { get; protected set; }
         public int Strength { get; protected set; }
         public int Defense { get; protected set; }
         public int Agility { get; protected set; }
         public int Kills { get; protected set; }
+        public string PersonalNumber { get; private set; }
+        public int Health { get; private set; }
 
-        public Soldier(string personalNumber, int minHealth = 90, int maxHealth = 120, int minStrength = 13, int maxStrength = 17, int minDefense = 2, int maxDefense = 4, int agility = 10)
+        public Soldier(string personalNumber, int minHealth = 100, int maxHealth = 125, int minStrength = 14, int maxStrength = 18, int minDefense = 3, int maxDefense = 4, int agility = 10)
         {
             PersonalNumber = personalNumber;
             Health = GenerateCharacteristic(minHealth, maxHealth);
@@ -99,11 +63,41 @@ namespace War
             Agility = agility;
         }
 
+        public void StartFight(Soldier secondSoldier)
+        {
+            int roundNumber = 1;
+
+            while (secondSoldier.CurrentHealth > 0 && CurrentHealth > 0)
+            {
+                Console.WriteLine($"Round {roundNumber}");
+                secondSoldier.TakeDamage(this);
+
+                if (secondSoldier.CurrentHealth > 0)
+                    TakeDamage(secondSoldier);
+
+                roundNumber++;
+            }
+        }
+
+        public void ShowFinalInfo(Soldier enemy)
+        {
+            if (enemy.CurrentHealth <= 0)
+            {
+                Console.WriteLine($"\n{PersonalNumber} Win with {CurrentHealth}/{Health} health.");
+                Console.WriteLine($"{enemy.PersonalNumber} is dead.\n");
+            }
+            else
+            {
+                Console.WriteLine($"\n{enemy.PersonalNumber} Win with {enemy.CurrentHealth}/{enemy.Health} health.");
+                Console.WriteLine($"{PersonalNumber} is dead.\n");
+            }
+        }
+
         public virtual void TakeDamage(Soldier enemy)
         {
             if (CheckEnemyAccuracy())
             {
-                int damage = enemy.GenerateDamage();
+                int damage = enemy.GetDamage();
 
                 if (damage - Defense >= CurrentHealth)
                     CurrentHealth = 0;
@@ -120,9 +114,10 @@ namespace War
             }
         }
 
-        public virtual int GenerateDamage()
+        public virtual int GetDamage()
         {
-            return Strength;
+            int damage = Strength;
+            return damage;
         }
 
         public void IncreaseKills(Soldier enemy)
@@ -169,21 +164,13 @@ namespace War
 
             return random.Next(minValue, maxValue + 1);
         }
-
-        protected int GetRandomNumber()
-        {
-            Random random = new Random();
-            int minChance = 0;
-            int maxChance = 101;
-            return random.Next(minChance, maxChance);
-        }
     }
 
     class Heavy : Soldier
     {
         private int _blockDamageChance;
 
-        public Heavy(string personalNumber, int blockDamageChance = 7) : base(personalNumber, minHealth: 120, 150, minStrength: 14, 18, minDefense: 4, 8, agility: 1)
+        public Heavy(string personalNumber, int blockDamageChance = 7) : base(personalNumber, minHealth: 120, 150, minStrength: 14, 16, minDefense: 4, 5, agility: 1)
         {
             _blockDamageChance = blockDamageChance;
         }
@@ -192,9 +179,9 @@ namespace War
         {
             if (CheckEnemyAccuracy())
             {
-                int damage = enemy.GenerateDamage();
+                int damage = enemy.GetDamage();
 
-                if (GetRandomNumber() <= _blockDamageChance)
+                if (UserUtils.GetRandomNumber() <= _blockDamageChance)
                 {
                     int blockDamageCoefficient = 2;
                     damage /= blockDamageCoefficient;
@@ -223,11 +210,11 @@ namespace War
             _criticalChance = GenerateCharacteristic(minCriticalChance, maxCriticalChance);
         }
 
-        public override int GenerateDamage()
+        public override int GetDamage()
         {
-            int damage = base.GenerateDamage();
+            int damage = base.GetDamage();
 
-            if (GetRandomNumber() <= _criticalChance)
+            if (UserUtils.GetRandomNumber() <= _criticalChance)
             {
                 int damageCoefficient = 3;
                 damage *= damageCoefficient;
@@ -247,7 +234,13 @@ namespace War
             Soldiers = GetSoldiers(countryName, soldiersCount);
         }
 
-        public Soldier FindBestKiller()
+        public Soldier GetAliveSoldier()
+        {
+            int firstArmySoldierIndex = GetAliveSoldierIndex();
+            return Soldiers[firstArmySoldierIndex];
+        }
+
+        public Soldier GetBestKiller()
         {
             Soldier bestKiller = Soldiers[0];
 
@@ -271,20 +264,6 @@ namespace War
             }
         }
 
-        public int GetAliveSoldierIndex()
-        {
-            for (int i = 0; i < Soldiers.Count; i++)
-            {
-                if (Soldiers[i].CurrentHealth > 0)
-                {
-                    return i;
-                }
-            }
-
-            Console.WriteLine("Alive soldiers are not founded.");
-            return -1;
-        }
-
         public int GetQuantityOfAliveSoldiers()
         {
             int quantity = 0;
@@ -296,6 +275,20 @@ namespace War
             }
 
             return quantity;
+        }
+
+        private int GetAliveSoldierIndex()
+        {
+            for (int i = 0; i < Soldiers.Count; i++)
+            {
+                if (Soldiers[i].CurrentHealth > 0)
+                {
+                    return i;
+                }
+            }
+
+            Console.WriteLine("Alive soldiers are not founded.");
+            return -1;
         }
 
         private List<Soldier> GetSoldiers(string CountryName, int soldiersCount)
@@ -338,10 +331,36 @@ namespace War
             Platoon = new Platoon(Name, soldiersCount + 1);
         }
 
-        public int GetRandomNumber(int minChance = 0, int maxChance = 101)
+        public Country DetermineInitiative(Country country2, out Country secondArmy)
         {
-            Random random = new Random();
-            return random.Next(minChance, maxChance);
+            const int Country1Number = 1;
+            const int Country2Number = Country1Number + 1;
+            Country firstArmy;
+
+            if (UserUtils.GetRandomNumber(Country1Number, Country2Number + 1) == Country2Number)
+            {
+                firstArmy = country2;
+                secondArmy = this;
+            }
+            else
+            {
+                firstArmy = this;
+                secondArmy = country2;
+            }
+
+            return firstArmy;
+        }
+
+        public void ShowFinalInfo(Country enemy)
+        {
+            if (Platoon.GetQuantityOfAliveSoldiers() <= 0)
+            {
+                Console.WriteLine($"\n====== {enemy.Name} Win with {enemy.Platoon.GetQuantityOfAliveSoldiers()}/{enemy.Platoon.Soldiers.Count} alive soldiers. Best killer: {enemy.Platoon.GetBestKiller().PersonalNumber} with {enemy.Platoon.GetBestKiller().Kills} kills. His type - {enemy.Platoon.GetBestKiller().GetType()} ======");
+            }
+            else
+            {
+                Console.WriteLine($"\n====== {Name} Win with {Platoon.GetQuantityOfAliveSoldiers()}/{Platoon.Soldiers.Count} alive soldiers. Best killer: {Platoon.GetBestKiller().PersonalNumber} with {Platoon.GetBestKiller().Kills} kills. His type - {Platoon.GetBestKiller().GetType()} ======");
+            }
         }
     }
 }
