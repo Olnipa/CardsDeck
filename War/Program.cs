@@ -246,30 +246,6 @@ namespace War
         }
     }
 
-    //class Country22
-    //{
-    //    public string Name { get; private set; }
-    //    public Country Platoon { get; private set; }
-
-    //    public Country22(string name, int soldiersCount = 60)
-    //    {
-    //        Name = name;
-    //        Platoon = new Country(Name, soldiersCount + 1);
-    //    }
-
-    //    public void ShowFinalInfo(Country22 enemy)
-    //    {
-    //        if (Platoon.GetQuantityOfAliveSoldiers() <= 0)
-    //        {
-    //            Console.WriteLine($"\n====== {enemy.Name} Win with {enemy.Platoon.GetQuantityOfAliveSoldiers()}/{enemy.Platoon.GetSoldiersCount()} alive soldiers. Best killer: {enemy.Platoon.GetBestKiller().PersonalNumber} with {enemy.Platoon.GetBestKiller().Kills} kills. His type - {enemy.Platoon.GetBestKiller().GetType()} ======");
-    //        }
-    //        else
-    //        {
-    //            Console.WriteLine($"\n====== {Name} Win with {Platoon.GetQuantityOfAliveSoldiers()}/{Platoon.GetSoldiersCount()} alive soldiers. Best killer: {Platoon.GetBestKiller().PersonalNumber} with {Platoon.GetBestKiller().Kills} kills. His type - {Platoon.GetBestKiller().GetType()} ======");
-    //        }
-    //    }
-    //}
-
     class Country
     {
         private List<Soldier> _soldiers;
