@@ -9,28 +9,7 @@ namespace War
         {
             War warRedBlue = new War(new Country("Redlandia"), new Country("Blueland"));
             
-            Console.WriteLine("No one knows why these armies want to fight. But it is too late to stop them.");
-            Console.WriteLine("Press any key to start a fight.");
-            Console.ReadKey(true);
-            Console.WriteLine($"\nArmy of {warRedBlue.Country1.Name}");
-            warRedBlue.Country1.ShowSoldiers();
-            Console.WriteLine($"\nArmy of {warRedBlue.Country2.Name}");
-            warRedBlue.Country2.ShowSoldiers();
-            Console.WriteLine("Press any key to continue...\n");
-            Console.ReadKey(true);
-
-            while (warRedBlue.Country1.GetQuantityOfAliveSoldiers() > 0 && warRedBlue.Country2.GetQuantityOfAliveSoldiers() > 0)
-            {
-                Country firstArmy = warRedBlue.DetermineInitiative(out Country secondArmy);
-
-                Soldier firstSoldier = firstArmy.GetAliveSoldier();
-                Soldier secondSoldier = secondArmy.GetAliveSoldier();
-
-                warRedBlue.StartFight(firstSoldier, secondSoldier);
-                firstSoldier.ShowFinalInfo(secondSoldier);
-            }
-
-            warRedBlue.Country1.ShowFinalInfo(warRedBlue.Country2);
+            warRedBlue.Fight();
         }
     }
 
@@ -45,36 +24,58 @@ namespace War
 
     class War
     {
-        public Country Country1 { get; private set; }
-        public Country Country2 { get; private set; }
-
+        private Country _сountry1;
+        private Country _сountry2;
         public War(Country country1, Country country2)
         {
-            Country1 = country1;
-            Country2 = country2;
+            _сountry1 = country1;
+            _сountry2 = country2;
         }
 
-        public Country DetermineInitiative(out Country secondArmy)
+        public void Fight()
+        {
+            Console.WriteLine("No one knows why these armies want to fight. But it is too late to stop them.");
+            Console.WriteLine("Press any key to start a fight.");
+            Console.ReadKey(true);
+            Console.WriteLine($"\nArmy of {_сountry1.Name}");
+            _сountry1.ShowSoldiers();
+            Console.WriteLine($"\nArmy of {_сountry2.Name}");
+            _сountry2.ShowSoldiers();
+            Console.WriteLine("Press any key to continue...\n");
+            Console.ReadKey(true);
+
+            while (_сountry1.GetQuantityOfAliveSoldiers() > 0 && _сountry2.GetQuantityOfAliveSoldiers() > 0)
+            {
+                DetermineInitiative(out Country firstArmy, out Country secondArmy);
+
+                Soldier firstSoldier = firstArmy.GetAliveSoldier();
+                Soldier secondSoldier = secondArmy.GetAliveSoldier();
+
+                SoldiersFight(firstSoldier, secondSoldier);
+                firstSoldier.ShowFinalInfo(secondSoldier);
+            }
+
+            _сountry1.ShowFinalInfo(_сountry2);
+        }
+
+        public void  DetermineInitiative(out Country firstArmy, out Country secondArmy)
         {
             const int Country1Number = 1;
             const int Country2Number = Country1Number + 1;
-            Country firstArmy;
 
             if (UserUtils.GetRandomNumber(Country1Number, Country2Number + 1) == Country2Number)
             {
-                firstArmy = Country2;
-                secondArmy = Country1;
+                firstArmy = _сountry2;
+                secondArmy = _сountry1;
             }
             else
             {
-                firstArmy = Country1;
-                secondArmy = Country2;
+                firstArmy = _сountry1;
+                secondArmy = _сountry2;
             }
-
-            return firstArmy;
         }
 
-        public void StartFight(Soldier firstSoldier, Soldier secondSoldier)
+        public void SoldiersFight(Soldier firstSoldier, Soldier secondSoldier)
         {
             int roundNumber = 1;
 
