@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GladiatorsFight", "Gladiato
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Supermarket", "Supermarket\Supermarket.csproj", "{C83242E0-31C8-4B79-973F-8031C147110C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "War", "War\War.csproj", "{A850CE6E-EEA9-4139-B598-52D21B6F71F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War", "War\War.csproj", "{A850CE6E-EEA9-4139-B598-52D21B6F71F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aquarium", "Aquarium\Aquarium.csproj", "{B13EFE3A-BAA8-4C57-8300-C202FD08EFE4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{A850CE6E-EEA9-4139-B598-52D21B6F71F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A850CE6E-EEA9-4139-B598-52D21B6F71F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A850CE6E-EEA9-4139-B598-52D21B6F71F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B13EFE3A-BAA8-4C57-8300-C202FD08EFE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B13EFE3A-BAA8-4C57-8300-C202FD08EFE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B13EFE3A-BAA8-4C57-8300-C202FD08EFE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B13EFE3A-BAA8-4C57-8300-C202FD08EFE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
