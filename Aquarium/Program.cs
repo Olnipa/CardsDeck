@@ -13,7 +13,7 @@
 
     class Aquarium
     {
-        private List<Fish> _fishList = new List<Fish>();
+        private List<Fish> _fish = new List<Fish>();
 
         public Aquarium()
         {
@@ -24,7 +24,7 @@
         {
             bool isWorking = true;
 
-            while (isWorking == true && GetAmountOfCorpse() != _fishList.Count)
+            while (isWorking == true && GetAmountOfCorpse() != _fish.Count)
             {
                 const string Exit = "exit";
                 const string AppendFish = "add";
@@ -64,7 +64,7 @@
                 Console.Clear();
             }
 
-            if (GetAmountOfCorpse() == _fishList.Count)
+            if (GetAmountOfCorpse() == _fish.Count)
             {
                 Console.WriteLine("All fish is dead. Game over.");
             }
@@ -76,7 +76,7 @@
 
             for (int i = 0; i < quantity; i++)
             {
-                _fishList.Add(new Fish());
+                _fish.Add(new Fish());
             }
 
             Console.WriteLine($"{quantity} pcs of fish successfully added.");
@@ -109,9 +109,9 @@
         {
             Console.WriteLine("Alive fish in aquarium:\n");
 
-            for (int i = 0; i < _fishList.Count; i++)
+            for (int i = 0; i < _fish.Count; i++)
             {
-                Console.WriteLine($"Fish ID {_fishList[i].ID}. Health: {_fishList[i].Health}.");
+                Console.WriteLine($"Fish ID {_fish[i].ID}. Health: {_fish[i].Health}.");
             }
 
             Console.WriteLine();
@@ -121,12 +121,12 @@
         {
             Console.WriteLine(text);
 
-            for (int i = 0; i < _fishList.Count; i++)
+            for (int i = 0; i < _fish.Count; i++)
             {
-                _fishList[i].ReduceHealth();
+                _fish[i].ReduceHealth();
 
-                if (_fishList[i].Health <= 0)
-                    Console.WriteLine($"Fish ID {_fishList[i].ID} is dead. Please, remove it from aquarium.");
+                if (_fish[i].IsAlive == false)
+                    Console.WriteLine($"Fish ID {_fish[i].ID} is dead. Please, remove it from aquarium.");
             }
         }
 
@@ -134,9 +134,9 @@
         {
             int quantity = 0;
 
-            for (int i = 0; i < _fishList.Count; i++)
+            for (int i = 0; i < _fish.Count; i++)
             {
-                if (_fishList[i].Health <= 0)
+                if (_fish[i].IsAlive == false)
                     quantity++;
             }
 
@@ -148,13 +148,13 @@
             int index = ReadNumber("Write fish ID to remove fish:");
             bool iDisFounded = false;
 
-            for (int i = 0; i < _fishList.Count; i++)
+            for (int i = 0; i < _fish.Count; i++)
             {
-                if (_fishList[i].ID == index)
+                if (_fish[i].ID == index)
                 {
                     iDisFounded = true;
-                    Console.WriteLine($"Fish {_fishList[i].ID} was removed");
-                    _fishList.RemoveAt(i);
+                    Console.WriteLine($"Fish {_fish[i].ID} was removed");
+                    _fish.RemoveAt(i);
                 }
             }
 
@@ -169,17 +169,19 @@
     {
         private static int _lastID;
         public int Health { get; private set; }
+        public bool IsAlive { get; private set; }
         public int ID { get; private set; }
 
         public Fish()
         {
             Health = GenerateNumber();
             ID = GenerateID();
+            IsAlive = Health > 0;
         }
 
         public void ReduceHealth()
         {
-            if (Health > 0)
+            if (IsAlive)
                 Health--;
         }
 
