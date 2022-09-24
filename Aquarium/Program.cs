@@ -11,11 +11,6 @@
         }
     }
 
-    class AquariumLife
-    {
-
-    }
-
     class Aquarium
     {
         private List<Fish> _fishList = new List<Fish>();
@@ -172,7 +167,7 @@
 
     class Fish
     {
-        private static int lastID;
+        private static int _lastID;
         public int Health { get; private set; }
         public int ID { get; private set; }
 
@@ -196,8 +191,8 @@
 
         private int GenerateID()
         {
-            lastID++;
-            return lastID;
+            _lastID++;
+            return _lastID;
         }
     }
 }
