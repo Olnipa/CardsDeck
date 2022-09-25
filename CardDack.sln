@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquarium", "Aquarium\Aquari
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zoo", "Zoo\Zoo.csproj", "{19D33195-64EA-4923-8E64-D3D6D0F73200}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarService", "CarService\CarService.csproj", "{096BD8C0-B264-4C7C-ACC6-C1C0D3D42F40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{19D33195-64EA-4923-8E64-D3D6D0F73200}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19D33195-64EA-4923-8E64-D3D6D0F73200}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19D33195-64EA-4923-8E64-D3D6D0F73200}.Release|Any CPU.Build.0 = Release|Any CPU
+		{096BD8C0-B264-4C7C-ACC6-C1C0D3D42F40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{096BD8C0-B264-4C7C-ACC6-C1C0D3D42F40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{096BD8C0-B264-4C7C-ACC6-C1C0D3D42F40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{096BD8C0-B264-4C7C-ACC6-C1C0D3D42F40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

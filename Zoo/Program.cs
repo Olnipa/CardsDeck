@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Metrics;
+﻿using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Numerics;
 
 namespace Zoo
@@ -7,14 +8,8 @@ namespace Zoo
     {
         static void Main(string[] args)
         {
-            List<Aviary> aviaries = new List<Aviary>() 
-            {
-                new Aviary("Wolf", new List<Animal>() { new Animal("Mark", "auuuu", "male"), new Animal("Jeimy", "auuuu", "female") }),
-                new Aviary("Tiger", new List<Animal>() { new Animal("Alex", "rrrr", "male"), new Animal("Jocabet", "rrrr", "female") }),
-                new Aviary("Vorons", new List<Animal>() { new Animal("Tom", "aar", "male"), new Animal("Liza", "aar", "female") }),
-                new Aviary("Turtle", new List<Animal>() { new Animal("Javier", "\"no sound\"", "male"), new Animal("Lucy", "\"no sound\"", "female") })
-            };
-            Zoo zoo = new Zoo(aviaries);
+            
+            Zoo zoo = new Zoo();
 
             zoo.StartWork();
         }
@@ -50,28 +45,27 @@ namespace Zoo
     {
         private List<Aviary> _aviaries = new List<Aviary>();
 
-        public Zoo(List<Aviary> aviaries)
+        public Zoo()
         {
-            _aviaries = aviaries;
-        }
-
-        public void ShowAviaries()
-        {
-            Console.WriteLine("\nList of available aviaries:");
-
-            for (int i = 0; i < _aviaries.Count; i++)
+            _aviaries = new List<Aviary>()
             {
-                Console.WriteLine($"Aviary {i + 1}. {_aviaries[i].Name}.");
-            }
+                new Aviary("Wolf", new List<Animal>() { new Animal("Mark", "auuuu", "male"), new Animal("Jeimy", "auuuu", "female") }),
+                new Aviary("Tiger", new List<Animal>() { new Animal("Alex", "rrrr", "male"), new Animal("Jocabet", "rrrr", "female") }),
+                new Aviary("Vorons", new List<Animal>() { new Animal("Tom", "aar", "male"), new Animal("Liza", "aar", "female") }),
+                new Aviary("Turtle", new List<Animal>() { new Animal("Javier", "\"no sound\"", "male"), new Animal("Lucy", "\"no sound\"", "female") })
+            };
         }
 
         public void StartWork()
         {
-            bool guestIsActive = true;
+            const string ExitFromZoo = "exit";
+            bool isGuestActive = true;
+
             Console.WriteLine("Welcome to the zoo!");
 
-            while (guestIsActive)
+            while (isGuestActive)
             {
+
                 ShowAviaries();
                 int choosenAviaryIndex = UserUtils.ReadNumber("\nWrite index of aviary whihch you want to see:") - 1;
 
@@ -86,16 +80,25 @@ namespace Zoo
                     Console.WriteLine("Index is out of range.");
                 }
 
-                const string Exit = "exit";
-                Console.Write($"\nPress any key to continue or write {Exit} to exit...");
-                string ChoosenMenu = Console.ReadLine();
+                Console.Write($"\nPress any key to continue or write {ExitFromZoo} to exit...");
+                string choosenMenu = Console.ReadLine();
 
-                if (ChoosenMenu == Exit.ToLower())
+                if (choosenMenu == ExitFromZoo.ToLower())
                 {
-                    guestIsActive = false;
+                    isGuestActive = false;
                 }
 
                 Console.Clear();
+            }
+        }
+
+        private void ShowAviaries()
+        {
+            Console.WriteLine("\nList of available aviaries:");
+
+            for (int i = 0; i < _aviaries.Count; i++)
+            {
+                Console.WriteLine($"Aviary {i + 1}. {_aviaries[i].Name}.");
             }
         }
     }
