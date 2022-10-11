@@ -24,11 +24,18 @@ namespace CarService
     {
         public SparePartNames Name { get; private set; }
         public int Price { get; private set; }
+        public int ReplacementCost { get; private set; }
 
-        public SparePart(SparePartNames name, int price)
+        public SparePart(SparePartNames name, int price, int replacementCost)
         {
             Name = name;
             Price = price;
+            ReplacementCost = replacementCost;
+        }
+
+        public int GetRepairCost()
+        {
+            return ReplacementCost + Price;
         }
     }
 
@@ -36,13 +43,11 @@ namespace CarService
     {
         public SparePart SparePart { get; private set; }
         public int Quantity { get; private set; }
-        public int ReplacementCost { get; private set; }
 
-        public SparePartStack(SparePart sparePart, int quantity, int replacementCost)
+        public SparePartStack(SparePart sparePart, int quantity)
         {
             SparePart = sparePart;
             Quantity = quantity;
-            ReplacementCost = replacementCost;
         }
 
         public void IssueSparePart()
@@ -55,6 +60,14 @@ namespace CarService
             {
                 Console.WriteLine("Not enouth detail in warehouse.");
             }
+        }
+
+        public void ShowInfo()
+        {
+            int totalCost = SparePart.Price + SparePart.ReplacementCost;
+            Console.WriteLine($"{SparePart.Name} - {Quantity} pcs." +
+                $"\tPrice - {SparePart.Price}.\tReplacement cost - {SparePart.ReplacementCost}. " +
+                $"\tTotal cost for repair - {totalCost}");
         }
     }
 
@@ -70,12 +83,12 @@ namespace CarService
             int maxMoney = 5000;
             int minDetailsPrice = 0;
             int maxDetailsPrice = 4;
-            _money = UserUtils.GetNumber(minMoney, maxMoney);
-            _spareParts.Add(new SparePartStack(new SparePart(SparePartNames.Engine, 500), UserUtils.GetNumber(minDetailsPrice, maxDetailsPrice), 1000));
-            _spareParts.Add(new SparePartStack(new SparePart(SparePartNames.Turbine, 100), UserUtils.GetNumber(minDetailsPrice, maxDetailsPrice), 500));
-            _spareParts.Add(new SparePartStack(new SparePart(SparePartNames.FuelPump, 70), UserUtils.GetNumber(minDetailsPrice, maxDetailsPrice), 150));
-            _spareParts.Add(new SparePartStack(new SparePart(SparePartNames.Bulb, 10), UserUtils.GetNumber(minDetailsPrice, maxDetailsPrice), 100));
-            _spareParts.Add(new SparePartStack(new SparePart(SparePartNames.Headlight, 50), UserUtils.GetNumber(minDetailsPrice, maxDetailsPrice), 200));
+            _money = UserUtils.GetRandomNumber(minMoney, maxMoney);
+            _spareParts.Add(new SparePartStack(new SparePart(SparePartNames.Engine, 500, 1000), UserUtils.GetRandomNumber(minDetailsPrice, maxDetailsPrice)));
+            _spareParts.Add(new SparePartStack(new SparePart(SparePartNames.Turbine, 100, 500), UserUtils.GetRandomNumber(minDetailsPrice, maxDetailsPrice)));
+            _spareParts.Add(new SparePartStack(new SparePart(SparePartNames.FuelPump, 70, 150), UserUtils.GetRandomNumber(minDetailsPrice, maxDetailsPrice)));
+            _spareParts.Add(new SparePartStack(new SparePart(SparePartNames.Bulb, 10, 100), UserUtils.GetRandomNumber(minDetailsPrice, maxDetailsPrice)));
+            _spareParts.Add(new SparePartStack(new SparePart(SparePartNames.Headlight, 50, 200), UserUtils.GetRandomNumber(minDetailsPrice, maxDetailsPrice)));
             GetClients();
         }
 
@@ -86,11 +99,11 @@ namespace CarService
 
             while (isWorking && _clients.Count > 0)
             {
+                const string Exit = "exit";
                 Console.ReadKey(true);
                 Console.Clear();
-                const string Exit = "exit";
                 Console.WriteLine($"Car service money: {_money}\nThere are {_clients.Count} customers in queue. Press any key " +
-                    $"to serve next client or write \"Exit\" to finish work.");
+                    $"to serve next client or write \"{Exit}\" to finish work.");
                 string choosenMenu = Console.ReadLine();
                 
                 if (choosenMenu.ToLower() == Exit)
@@ -110,10 +123,8 @@ namespace CarService
         {
             for (int i = 0; i < _spareParts.Count; i++)
             {
-                int totalCost = _spareParts[i].SparePart.Price + _spareParts[i].ReplacementCost;
-                Console.WriteLine($"{i + 1}. {_spareParts[i].SparePart.Name} - {_spareParts[i].Quantity} pcs." +
-                    $"\tPrice - {_spareParts[i].SparePart.Price}.\tReplacement cost - {_spareParts[i].ReplacementCost}. " +
-                    $"\tTotal cost for repair - {totalCost}");
+                Console.Write($"{ i + 1}. ");
+                _spareParts[i].ShowInfo();
             }
         }
 
@@ -127,7 +138,7 @@ namespace CarService
             Console.WriteLine($"\nList of spare parts in warehouse:");
             ShowSparePartsInfo();
 
-            Console.WriteLine($"\nPress any key to serve client or write \"{Refuse}\" to refuse customer service...\nEntered value:");
+            Console.Write($"\nPress any key to serve client or write \"{Refuse}\" to refuse customer service...\nEntered value:");
             string choosenMenu = Console.ReadLine();
 
             if (choosenMenu.ToLower() == Refuse)
@@ -148,9 +159,9 @@ namespace CarService
 
             if (_spareParts[choosenPartNumber].Quantity > 0)
             {
-                if (client.IsSolvent(_spareParts[choosenPartNumber]))
+                if (client.IsSolvent(_spareParts[choosenPartNumber].SparePart))
                 {
-                    int moneyFromClient = client.PayMoney(_spareParts[choosenPartNumber]);
+                    int moneyFromClient = client.PayMoney(_spareParts[choosenPartNumber].SparePart);
                     _money += moneyFromClient;
                     Console.WriteLine($"Client payd {moneyFromClient}. Car service money: {_money}");
                     _spareParts[choosenPartNumber].IssueSparePart();
@@ -218,7 +229,7 @@ namespace CarService
 
         private void GetClients(int minClientsCount = 1, int maxClientsCount = 12)
         {
-            for (int i = 0; i < UserUtils.GetNumber(minClientsCount, maxClientsCount); i++)
+            for (int i = 0; i < UserUtils.GetRandomNumber(minClientsCount, maxClientsCount); i++)
             {
                 _clients.Enqueue(new Client());
             }
@@ -235,7 +246,7 @@ namespace CarService
         {
             BrokenSparePart = GetSparePartName();
             CarIsRepaired = false;
-            Money = UserUtils.GetNumber();
+            Money = UserUtils.GetRandomNumber();
         }
 
         public void TakeMoney(int money)
@@ -251,10 +262,9 @@ namespace CarService
             Console.WriteLine($"The customer's car has a broken {BrokenSparePart} (Part number {(int)BrokenSparePart})");
         }
 
-        public bool IsSolvent(SparePartStack detailStack)
+        public bool IsSolvent(SparePart sparePart)
         {
-            int repairCost = detailStack.ReplacementCost + detailStack.SparePart.Price;
-            return Money >= repairCost;
+            return Money >= sparePart.GetRepairCost(); ;
         }
 
         public void ConfirmRepair()
@@ -262,13 +272,13 @@ namespace CarService
             CarIsRepaired = true;
         }
 
-        public int PayMoney(SparePartStack detailStack)
+        public int PayMoney(SparePart sparePart)
         {
             int moneyToPay = 0;
 
-            if (IsSolvent(detailStack))
+            if (IsSolvent(sparePart))
             {
-                moneyToPay = detailStack.ReplacementCost + detailStack.SparePart.Price;
+                moneyToPay = sparePart.ReplacementCost + sparePart.Price;
                 Money -= moneyToPay;
             }
             else
@@ -283,7 +293,7 @@ namespace CarService
         {
             int minDetailIndex = Enum.GetValues(typeof(SparePartNames)).Cast<int>().Min();
             int detailsCount = Enum.GetValues(typeof(SparePartNames)).Cast<int>().Max();
-            int detailIndex = UserUtils.GetNumber(minDetailIndex, detailsCount + 1);
+            int detailIndex = UserUtils.GetRandomNumber(minDetailIndex, detailsCount + 1);
             return (SparePartNames)detailIndex;
         }
 
@@ -314,7 +324,7 @@ namespace CarService
             return number;
         }
 
-        public static int GetNumber(int minNumber = 100, int maxNumber = 5000)
+        public static int GetRandomNumber(int minNumber = 100, int maxNumber = 5000)
         {
             Random random = new Random();
             return random.Next(minNumber, maxNumber);
