@@ -19,9 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War", "War\War.csproj", "{A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aquarium", "Aquarium\Aquarium.csproj", "{B13EFE3A-BAA8-4C57-8300-C202FD08EFE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zoo", "Zoo\Zoo.csproj", "{19D33195-64EA-4923-8E64-D3D6D0F73200}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zoo", "Zoo\Zoo.csproj", "{19D33195-64EA-4923-8E64-D3D6D0F73200}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarService", "CarService\CarService.csproj", "{096BD8C0-B264-4C7C-ACC6-C1C0D3D42F40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarService", "CarService\CarService.csproj", "{096BD8C0-B264-4C7C-ACC6-C1C0D3D42F40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchPrisoners", "SearchPrisoners\SearchPrisoners.csproj", "{262AD9E9-F46F-4B45-8F17-ED004EC7C89C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{096BD8C0-B264-4C7C-ACC6-C1C0D3D42F40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{096BD8C0-B264-4C7C-ACC6-C1C0D3D42F40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{096BD8C0-B264-4C7C-ACC6-C1C0D3D42F40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{262AD9E9-F46F-4B45-8F17-ED004EC7C89C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{262AD9E9-F46F-4B45-8F17-ED004EC7C89C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{262AD9E9-F46F-4B45-8F17-ED004EC7C89C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{262AD9E9-F46F-4B45-8F17-ED004EC7C89C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
