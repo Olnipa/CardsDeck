@@ -35,67 +35,55 @@ namespace SearchPrisoners
 
         public void StartWork()
         {
-            bool SearchNotFinished = true;
-            List<Prisoner> filteredPrisoners = new List<Prisoner>();
-            filteredPrisoners.AddRange(_prisoners);
+            bool searchNotFinished = true;
             Console.WriteLine("Welcome to Prisoner Data Base\n");
+            List<Prisoner> filteredPrisoners;
 
-            while (SearchNotFinished)
+            while (searchNotFinished)
             {
+                const string StartFilters = "1";
                 const string Exit = "0";
-                const string Weight = "1";
-                const string Height = "2";
-                const string Nation = "3";
-                const string ResetFilters = "4";
-                string choosenMenu;
-
-                if (filteredPrisoners.Count == 0)
-                    filteredPrisoners.AddRange(_prisoners);
-
-                Console.Write($"Choose the filter:\n\"{Weight}\" - by Weight\n\"{Height}\" - by Height\n" +
-                    $"\"{Nation}\" - by Nation\n\"{ResetFilters}\" - Reset filters\n\"{Exit}\" - Exit\n" +
+                Console.Write($"Choose the menu:\n\"{StartFilters}\" - Start filter\n\"{Exit}\" - Exit\n" +
                     $"\nChoosen menu:");
-                choosenMenu = Console.ReadLine();
+                string choosenMenu = Console.ReadLine();
 
-                switch (choosenMenu.ToLower())
+                switch (choosenMenu)
                 {
-                    case Weight:
-                        filteredPrisoners = FilterByWeight(filteredPrisoners);
-                        break;
-                    case Height:
-                        filteredPrisoners = FilterByHeight(filteredPrisoners);
-                        break;
-                    case Nation:
-                        filteredPrisoners = FilterByNationalities(filteredPrisoners);
-                        break;
-                    case ResetFilters:
-                        filteredPrisoners.Clear();
+                    case StartFilters:
+                        StartFilter();
                         break;
                     case Exit:
-                        SearchNotFinished = false;
+                        searchNotFinished = false;
                         break;
                     default:
                         break;
                 }
 
-                if (filteredPrisoners.Count > 0 && SearchNotFinished == true)
-                {
-                    Console.WriteLine("List of filtered prisoners:");
-                    ShowPrisoners(filteredPrisoners);
-                    Console.WriteLine();
-                }
-                else if (SearchNotFinished == false)
+                if (searchNotFinished == false)
                 {
                     Console.WriteLine("Goodbye!");
                 }
-                else
-                {
-                    Console.Write("No prisonerers, matching your filter. Press any key to continue and reset filters...");
-                    Console.ReadKey(true);
-                    Console.Clear();
-                    filteredPrisoners.Clear();
-                }
             }
+        }
+
+        private void StartFilter()
+        {
+            List<Prisoner> filteredPrisoners = _prisoners.Where(_prisoners => _prisoners.IsArrested == false).ToList();
+            filteredPrisoners = FilterByHeight(FilterByWeight(FilterByNationalities(filteredPrisoners))).ToList();
+
+            if (filteredPrisoners.Count > 0)
+            {
+                Console.WriteLine("\nList of filtered prisoners:");
+                ShowPrisoners(filteredPrisoners);
+                Console.Write("\nPress any key to start new filter...");
+            }
+            else
+            {
+                Console.Write("\nNo prisonerers, matching your filter. Press any key to start new filter...");
+            }
+
+            Console.ReadKey(true);
+            Console.Clear();
         }
 
         private void ShowNationalities()
@@ -122,24 +110,21 @@ namespace SearchPrisoners
             ShowNationalities();
             int nationalityIndex = UserUtils.ReadNumber("\nEnter a nationality index:") - 1;
             Console.WriteLine();
-            filteredPrisoners = filteredPrisoners.Where(_prisoners => _prisoners.Nationality == (Nationality)nationalityIndex && _prisoners.IsArrested == false).ToList();
-            return filteredPrisoners;
+            return filteredPrisoners.Where(_prisoners => _prisoners.Nationality == (Nationality)nationalityIndex).ToList();
         }
 
         private List<Prisoner> FilterByWeight(List<Prisoner> filteredPrisoners)
         {
             int minWeight = UserUtils.ReadNumber("Enter min prisoner weight:");
             int maxWeight = UserUtils.ReadNumber("Enter max prisoner weight:");
-            filteredPrisoners = filteredPrisoners.Where(_prisoners => _prisoners.Weight >= minWeight && _prisoners.Weight <= maxWeight && _prisoners.IsArrested == false).ToList();
-            return filteredPrisoners;
+            return filteredPrisoners.Where(_prisoners => _prisoners.Weight >= minWeight && _prisoners.Weight <= maxWeight).ToList();
         }
 
         private List<Prisoner> FilterByHeight(List<Prisoner> filteredPrisoners)
         {
             int minHeight = UserUtils.ReadNumber("Enter min prisoner height:");
             int maxHeight = UserUtils.ReadNumber("Enter max prisoner height:");
-            filteredPrisoners = filteredPrisoners.Where(_prisoners => _prisoners.Height >= minHeight && _prisoners.Height <= maxHeight && _prisoners.IsArrested == false).ToList();
-            return filteredPrisoners;
+            return filteredPrisoners.Where(_prisoners => _prisoners.Height >= minHeight && _prisoners.Height <= maxHeight).ToList();
         }
     }
 
