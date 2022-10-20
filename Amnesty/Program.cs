@@ -7,12 +7,11 @@ namespace Amnesty
         static void Main(string[] args)
         {
             Prison prison = new Prison();
-            Console.WriteLine($"Welcome to Arstocka prison! Today prisoners convicted of a \"{prison._CrimeUnderAmnesty}\" crime will be amnestied");
-            Console.WriteLine("\nPrisoners before amnesty:");
+            Crimes crimeUnderAmnesty = Crimes.AntiGovernment;
+            Console.WriteLine($"Welcome to Arstocka prison!");
+            Console.WriteLine("\nList of prisoners:");
             prison.ShowPrisoners();
-            prison.ExcludeAmnestied();
-            Console.WriteLine("\nPrisoners after amnesty:");
-            prison.ShowPrisoners();
+            prison.AmnestyForPrisoners(crimeUnderAmnesty);
         }
     }
 
@@ -27,15 +26,20 @@ namespace Amnesty
     class Prison
     {
         private List<Prisoner> _prisoners = new List<Prisoner>();
-        public Crimes _CrimeUnderAmnesty { get; private set; }
 
         public Prison()
         {
-            _CrimeUnderAmnesty = Crimes.AntiGovernment;
             _prisoners.Add(new Prisoner("Matew", Crimes.Murder));
             _prisoners.Add(new Prisoner("Kevin", Crimes.GrandTheftAuto));
             _prisoners.Add(new Prisoner("Dmitriy", Crimes.AntiGovernment));
             _prisoners.Add(new Prisoner("Katrin", Crimes.DrugTrade));
+        }
+
+        public void AmnestyForPrisoners(Crimes crimeUnderAmnesty)
+        {
+            ExcludeAmnestied(crimeUnderAmnesty);
+            Console.WriteLine("\nPrisoners after amnesty:");
+            ShowPrisoners();
         }
 
         public void ShowPrisoners()
@@ -46,14 +50,13 @@ namespace Amnesty
             }
         }
 
-        public void ExcludeAmnestied()
+        public void ExcludeAmnestied(Crimes crimeUnderAmnesty)
         {
-            _prisoners = _prisoners.Where(_prisoners => _prisoners.Crime != _CrimeUnderAmnesty).ToList();
+            _prisoners = _prisoners.Where(_prisoners => _prisoners.Crime != crimeUnderAmnesty).ToList();
         }
     }
 
     class Prisoner
-
     {
         public string Name { get; private set; }
         public Crimes Crime { get; private set; }
