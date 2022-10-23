@@ -1,4 +1,4 @@
-﻿namespace DefinitionOfOverdue
+﻿namespace DeterminationOfOverdue
 {
     internal class Program
     {
