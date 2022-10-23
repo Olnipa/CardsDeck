@@ -1,4 +1,6 @@
-﻿namespace TopPlayersOnServer
+﻿using System.Numerics;
+
+namespace TopPlayersOnServer
 {
     internal class Program
     {
@@ -63,13 +65,11 @@
 
         private void WriteTopPlayers(List<Player> players, string topPlayersBy)
         {
-            int i = 1;
             Console.WriteLine($"Top {players.Count} players by {topPlayersBy}:");
 
-            foreach (var player in players)
+            for (int i = 0; i < players.Count; i++)
             {
-                Console.WriteLine($"#{i}: {player.Name}. Level: {player.Level}. Strength: {player.Strengh}");
-                i++;
+                Console.WriteLine($"#{i + 1}: {players[i].Name}. Level: {players[i].Level}. Strength: {players[i].Strengh}");
             }
         }
     }
@@ -87,6 +87,7 @@
             Strengh = strengh;
         }
     }
+
     class UserUtils
     {
         public static int GetRandomNumber(int minNumber = 16, int maxNumber = 110)
