@@ -40,36 +40,31 @@ namespace TopPlayersOnServer
 
         public void ShowAllPlayers()
         {
-            Console.WriteLine("List of all players:");
-
-            foreach (var player in _players)
-            {
-                Console.WriteLine($"{player.Name}. Level: {player.Level}. Strength: {player.Strengh}");
-            }
+            WritePlayers(_players, $"List of all registered players:");
         }
 
         public void ShowTopByLevel()
         {
             int countInTop = 3;
             var topPlayers = _players.OrderByDescending(_players => _players.Level).Take(countInTop).ToList();
-            WriteTopPlayers(topPlayers, "level");
+            WritePlayers(topPlayers, $"Top {countInTop} players by level:");
         }
 
         public void ShowTopByStrength()
         {
             int countInTop = 3;
             var topPlayers = _players.OrderByDescending(_players => _players.Strengh).Take(countInTop).ToList();
-
-            WriteTopPlayers(topPlayers, "strength");
+            WritePlayers(topPlayers, $"Top {countInTop} players by strength:");
         }
 
-        private void WriteTopPlayers(List<Player> players, string topPlayersBy)
+        private void WritePlayers(List<Player> players, string text)
         {
-            Console.WriteLine($"Top {players.Count} players by {topPlayersBy}:");
+            Console.WriteLine(text);
 
             for (int i = 0; i < players.Count; i++)
             {
-                Console.WriteLine($"#{i + 1}: {players[i].Name}. Level: {players[i].Level}. Strength: {players[i].Strengh}");
+                Console.Write($"#{i + 1}: ");
+                players[i].ShowInfo();
             }
         }
     }
@@ -85,6 +80,11 @@ namespace TopPlayersOnServer
             Name = name;
             Level = level;
             Strengh = strengh;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"{Name}. Level: {Level}. Strength: {Strengh}.");
         }
     }
 
