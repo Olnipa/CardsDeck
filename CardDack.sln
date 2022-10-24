@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DefinitionOfOverdue", "Defi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArmamentReport", "ArmamentReport\ArmamentReport.csproj", "{932C2C51-3194-4C5A-8B10-BAFDDAA153A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniteArmy", "UniteArmy\UniteArmy.csproj", "{BE4C0CC5-1439-4FDA-B4E8-3FE04933883E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{932C2C51-3194-4C5A-8B10-BAFDDAA153A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{932C2C51-3194-4C5A-8B10-BAFDDAA153A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{932C2C51-3194-4C5A-8B10-BAFDDAA153A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE4C0CC5-1439-4FDA-B4E8-3FE04933883E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE4C0CC5-1439-4FDA-B4E8-3FE04933883E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE4C0CC5-1439-4FDA-B4E8-3FE04933883E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE4C0CC5-1439-4FDA-B4E8-3FE04933883E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
