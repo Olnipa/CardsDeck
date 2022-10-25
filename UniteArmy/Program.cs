@@ -39,9 +39,8 @@ namespace UniteArmy
 
         public void MoveSoldiersFromSquad1ToSquad2(char letter)
         {
-            var filteredSquad = _squad1.OrderBy(_squad1 => _squad1.Name).TakeWhile(_squad1 => _squad1.Name.StartsWith(letter)).ToList();
-            _squad1.RemoveAll(_squad1 => _squad1.Name.StartsWith(letter));
-            _squad2 = _squad2.Union(filteredSquad).ToList();
+            _squad2 = _squad2.Union(_squad1.OrderBy(_squad1 => _squad1.Name).Where(_squad1 => _squad1.Name.StartsWith(letter))).ToList();
+            _squad1 = _squad1.Except(_squad2).ToList();
         }
 
         public void ShowAllSoldiers()
